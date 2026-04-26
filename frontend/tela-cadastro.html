@@ -3,19 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="css/style.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+
     <title>Document</title>
 </head>
 <body>
-    <section class="etapa01-celular">
+    <section class="etapa01-telefone">
         <img src="images/icone-telefone-branco-fundo-verde.png">
         <h1>Bem-vindo(a)!</h1>
         <h2>Digite seu telefone para continuar</h2>
 
-        <label for="phone">Número de celular</label><br>
-        <input type="tel" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}" placeholder="(11) 98765-4321"> 
+        <div>
+            <label for="phone">Número de celular</label><br>
+            <input type="tel" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}" placeholder="(11) 98765-4321"> 
+        </div>
+        <!--usar display block no css-->
         <button>Continuar</button>
 
-        <p>Ao continuar, você receberá um código de verifIcação por SMS</p>
+        <p>Ao continuar, você receberá um código de verifIcação <br> por SMS</p>
     </section>
 </body>
 </html>

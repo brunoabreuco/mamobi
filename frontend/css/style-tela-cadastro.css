@@ -1,0 +1,77 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+    background-color: var(--background-secondary-color);
+    color: var(--text-secondary-color);
+    font-family: "inter", sans-serif;
+    letter-spacing: 0.011em;
+    line-height: 24px;
+}
+
+.etapa01-telefone {
+    padding: 164px 0px 237px 0px;
+}
+img {
+    width: 75px;
+    height: 75px;
+    display: block;
+    margin: 0 auto 30px auto;
+}
+
+h1 {
+    font-size: 44px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+h2 {
+    font-size: 16px;
+    font-weight: 400;
+    margin-bottom: 52px;
+    text-align: center;
+}
+
+div {
+    width: 350px;
+    margin: 0px auto;
+}
+label {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+input {
+    background-color: var(--secondary-color);
+    color: var(--text-quaternary-color);
+    width: 350px;
+    height: 52px;
+    border-radius: 15px;
+    border-color: transparent;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 4px auto 16px auto;
+    padding-left: 19px; /* para espacamento no placeholder */
+}
+
+button {
+    background-color: var(--button-no-clickable);
+    color: var(--button-text-no-clickable);
+    width: 350px;
+    height: 52px;
+    border-radius: 15px;
+    border-color: transparent;
+    display: block;
+    margin: 0 auto 30px auto;
+
+    font-size: 16px;
+    font-weight: 600;
+}
+
+p {
+    font-size: 13px;
+    font-weight: 400;
+    text-align: center;
+}
