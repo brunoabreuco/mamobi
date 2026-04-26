@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Optional
 from decimal import Decimal
 
+
 class AcaoData(BaseModel):
     title: str = Field(..., min_length=1, max_length=200)
     description: Optional[str] = None
@@ -18,6 +19,7 @@ class AcaoData(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
 class AcaoMetadata(BaseModel):
     id: str
     participant_count: int
@@ -26,8 +28,10 @@ class AcaoMetadata(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
 class AcaoResponse(BaseModel):
     """Composition of data and metadata for the response."""
+
     data: AcaoData
     metadata: AcaoMetadata
 
