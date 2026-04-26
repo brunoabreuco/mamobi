@@ -1,5 +1,4 @@
 import pytest
-from flask import Flask
 from datetime import datetime, timezone, timedelta
 from maes_mobilizadoras.models import db, User, EventCategory
 import app as main_app
