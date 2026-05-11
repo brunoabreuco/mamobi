@@ -3,36 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/style.meu_perfil.css">
     <title>Document</title>
 </head>
 <body>
-    <img src="./images/icone_perfil.svg">
-    <h2>Maria Fernanda</h2>
-    <p>Usuária Padrão</p>
-
-    <h2>Suas Estatísticas</h2>
-    <div class="icone_descricao">
-        <img src="./images/icone_medalha.svg">
-        <h3>Participou<br><span>3</span></h3>
-        <p>eventos confirmados</p>
+    <div class="foto_nome">
+        <img class="foto_perfil" src="./images/icone_perfil.svg">
+        <h2 id="nome">Maria Fernanda</h2>
+        <p id="subtitulo">Usuária Padrão</p>
     </div>
 
-    <h2>Menu</h2>
-    <div>
-        <div class="icone_descricao">
-            <img src="./images/icone_configuracao.svg">
-            <h3>Configuracoes</h3>
-        </div>
-        
-        <div class="icone_descricao">
-            <img src="./images/icone_ajuda.svg">
-            <h3>Ajuda</h3>
+    <div class="info_baixo">
+        <h2>Suas Estatísticas</h2>
+        <div id="caixa_vermelha">
+            <div class="icone_participou">
+                <img class="icone" id="medalha" src="./images/icone_medalha.svg">
+                <h3>Participou de</h3>
+            </div>
+    
+            <span>3</span>
+            <p>eventos confirmados</p>
         </div>
 
-        <div class="icone_descricao">
-            <img src="./images/icone_sair.svg">
-            <h3>Sair</h3>
-        </div>    
+        <h2>Menu</h2>
+        <div class="menu">
+            <div class="icone_descricao">
+                <img class="icone" src="./images/icone_configuracao.svg">
+                <a href="#">Configuracoes</a>
+            </div>
+            
+            <div class="icone_descricao">
+                <img class="icone" src="./images/icone_ajuda.svg">
+                <a href="#">Ajuda</a>
+            </div>
+
+            <div class="icone_descricao">
+                <img class="icone" src="./images/icone_sair.svg">
+                <a href="#" id="texto_sair">Sair</a>
+            </div>    
+        </div>
     </div>
+
 </body>
 </html>

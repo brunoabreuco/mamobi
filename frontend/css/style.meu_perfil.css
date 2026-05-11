@@ -1,0 +1,82 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif;
+}
+.foto_nome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 0px 72px 0px;
+}
+.foto_perfil {
+    width: 99px;
+    height: 99px;
+    margin-bottom: 28px;
+}
+.info_baixo {
+    padding: 0px 21px 0px 21px;
+}
+h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: black;
+    margin-bottom: 21px;
+}
+#nome {
+    margin-bottom: 7px;
+}
+#subtitulo {
+    font-size: 13px;
+    font-weight: 400;
+    color:#6E6F70;
+}
+#caixa_vermelha {
+    height: 110px;
+    background-color: #F8DDDA;
+    border-radius: 20px;
+    margin: 0px 10px;
+    color: #D35746;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    padding: 19px 15px; 
+    margin-bottom: 22px;
+}
+.icone_participou {
+    display: flex;
+    gap: 5px
+}
+span {
+    font-size: 32px;
+    font-weight: 500;
+}
+p {
+    font-size: 13px;
+    font-weight: 400;
+}
+.menu {
+    margin: 0px 29px;
+}
+.icone_descricao {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 22px;
+}
+.icone {
+    width: 17px;
+    height: 17px;
+}
+h3, a {
+    font-size: 15px;
+    font-weight: 600;
+}
+a {
+    color:#3E3F41;
+}
+#texto_sair {
+    color: #D35746;
+}
