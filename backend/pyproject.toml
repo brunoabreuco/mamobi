@@ -12,6 +12,9 @@ dependencies = [
     "pytest==9.0.3",
     "python-dotenv==1.2.2",
     "psycopg2-binary",
+    "supabase>=2.30.0",
+    "twilio>=9.10.9",
+    "pyjwt>=2.12.1",
 ]
 
 [tool.setuptools.packages.find]

@@ -1,21 +1,30 @@
 import os
 import pytest
 from datetime import datetime, timezone, timedelta
+from unittest.mock import MagicMock, patch
+
+from maes_mobilizadoras.app_factory import create_app
 from maes_mobilizadoras.models import db, User, EventCategory, Event
-import app as main_app
+
+from conftest import _TEST_ENV
 
 
 @pytest.fixture
 def app():
-    os.environ["DATABASE_URL"] = "sqlite:///:memory:"
-    app = main_app.create_app()
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
-    app.config["TESTING"] = True
+    test_config = {
+        "TESTING": True,
+        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+        "SECRET_KEY": "test-secret-key-32chars-padding!!",
+    }
+    with patch.dict(os.environ, _TEST_ENV):
+        with patch("maes_mobilizadoras.app_factory.create_client") as mock_supabase:
+            mock_supabase.return_value = MagicMock()
+            application = create_app(test_config=test_config)
 
-    with app.app_context():
-        db.create_all()
-        yield app
-        db.drop_all()
+        with application.app_context():
+            db.create_all()
+            yield application
+            db.drop_all()
 
 
 @pytest.fixture

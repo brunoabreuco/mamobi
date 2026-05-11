@@ -3,7 +3,6 @@ from flask import Blueprint, g, jsonify, request, current_app
 from pydantic import ValidationError
 
 from maes_mobilizadoras.limiter import limiter
-from maes_mobilizadoras.auth import require_auth
 from maes_mobilizadoras.models import Event, User, db
 from maes_mobilizadoras.schemas import (
     AcaoData,
@@ -13,8 +12,18 @@ from maes_mobilizadoras.schemas import (
     UserResponse,
     UserUpdateRequest,
 )
+from maes_mobilizadoras.auth import (
+    decode_token,
+    get_or_create_profile,
+    issue_tokens,
+    request_otp,
+    require_auth,
+    verify_otp,
+    verify_supabase_token,
+)
 
 api = Blueprint("api", __name__, url_prefix="/api")
+auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 
 def _pydantic_errors_to_dict(exc: ValidationError) -> dict:
@@ -201,3 +210,99 @@ def delete_me():
         current_app.logger.exception(e)
 
     return "", 204
+
+# =============================================================================
+# ENDPOINT DE AUTENTICAÇÃO OTP E GOOGLE
+# =============================================================================
+
+@auth_bp.post("/otp/request")
+def otp_request():
+    data = request.get_json(silent=True) or {}
+    phone = str(data.get("phone", "")).strip()
+    if not phone:
+        return jsonify({"error": "phone_required"}), 400
+
+    try:
+        request_otp(phone)
+    except ValueError as exc:
+        status = 429 if str(exc) == "rate_limited" else 400
+        return jsonify({"error": str(exc)}), status
+
+    return jsonify({"message": "otp_sent"}), 200
+
+
+@auth_bp.post("/otp/verify")
+def otp_verify():
+    data = request.get_json(silent=True) or {}
+    phone = str(data.get("phone", "")).strip()
+    code = str(data.get("code", "")).strip()
+
+    if not phone or not code:
+        return jsonify({"error": "phone_and_code_required"}), 400
+
+    try:
+        user = verify_otp(phone, code)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 401
+
+    tokens = issue_tokens(str(user.id), user.role)
+    return jsonify({
+        **tokens,
+        "user": {"id": str(user.id), "role": user.role},
+    }), 200
+
+
+@auth_bp.post("/google/exchange")
+def google_exchange():
+    """
+    Recebe o access_token do Supabase Auth (pós-Google OAuth no cliente),
+    valida, cria perfil se necessário, devolve tokens da aplicação.
+    """
+    data = request.get_json(silent=True) or {}
+    supabase_token = str(data.get("supabase_token", "")).strip()
+    if not supabase_token:
+        return jsonify({"error": "supabase_token_required"}), 400
+
+    try:
+        payload = verify_supabase_token(supabase_token)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 401
+
+    user_id = payload["sub"]
+    meta = payload.get("user_metadata") or {}
+    full_name = meta.get("full_name") or meta.get("name") or ""
+
+    user = get_or_create_profile(user_id, full_name=full_name)
+    tokens = issue_tokens(str(user.id), user.role)
+    return jsonify({
+        **tokens,
+        "user": {"id": str(user.id), "role": user.role},
+    }), 200
+
+
+@auth_bp.post("/refresh")
+def token_refresh():
+    data = request.get_json(silent=True) or {}
+    refresh_token = str(data.get("refresh_token", "")).strip()
+    if not refresh_token:
+        return jsonify({"error": "refresh_token_required"}), 400
+
+    try:
+        payload = decode_token(refresh_token, expected_type="refresh")
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 401
+
+    user = db.session.get(User, payload["sub"])
+    if user is None or not user.is_active:
+        return jsonify({"error": "user_not_found"}), 401
+
+    tokens = issue_tokens(str(user.id), user.role)
+    return jsonify(tokens), 200
+
+
+@auth_bp.post("/logout")
+@require_auth
+def logout():
+    # JWT stateless: logout é do lado do cliente (descarte do token).
+    # Revogação server-side (denylist) fica fora do escopo desta task.
+    return jsonify({"message": "logged_out"}), 200

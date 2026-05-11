@@ -6,6 +6,7 @@ from flask import Flask
 
 from maes_mobilizadoras.models import User, db
 from maes_mobilizadoras.api_routes import api
+from maes_mobilizadoras.auth import issue_tokens
 
 
 # ------------------------------------------------------------------ fixtures
@@ -15,6 +16,7 @@ def app():
     app = Flask(__name__)
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.config["SECRET_KEY"] = "test-secret-key-32chars-padding!!"
 
     db.init_app(app)
 
@@ -55,13 +57,12 @@ def _create_user(app, **kwargs) -> User:
         # Retorna id para recarregar fora do contexto
         return user.id
 
-
-def _auth_header(app, supabase_mock, user_id: str) -> dict:
-    """Configura o mock para que require_auth aceite 'faketoken' e retorne user_id."""
-    mock_resp = MagicMock()
-    mock_resp.user.id = user_id
-    supabase_mock.auth.get_user.return_value = mock_resp
-    return {"Authorization": "Bearer faketoken"}
+# _auth_header: emite JWT real em vez de mockar supabase
+def _auth_header(app, user_id: str) -> dict:
+    with app.app_context():
+        user = db.session.get(User, user_id)
+        tokens = issue_tokens(str(user.id), user.role)
+    return {"Authorization": f"Bearer {tokens['access_token']}"}
 
 
 # ------------------------------------------------------------------ GET /api/me
@@ -77,9 +78,9 @@ def test_get_me_token_invalido_retorna_401(client, supabase_mock):
     assert resp.status_code == 401
 
 
-def test_get_me_retorna_perfil_correto(client, app, supabase_mock):
+def test_get_me_retorna_perfil_correto(client, app):
     uid = _create_user(app, full_name="Maria Silva", phone="+5511999990001")
-    headers = _auth_header(app, supabase_mock, uid)
+    headers = _auth_header(app, uid)
 
     resp = client.get("/api/me", headers=headers)
     assert resp.status_code == 200
@@ -89,9 +90,9 @@ def test_get_me_retorna_perfil_correto(client, app, supabase_mock):
     assert "role" in data
 
 
-def test_get_me_usuario_inativo_retorna_404(client, app, supabase_mock):
+def test_get_me_usuario_inativo_retorna_404(client, app):
     uid = _create_user(app, phone="+5511999990002", is_active=False)
-    headers = _auth_header(app, supabase_mock, uid)
+    headers = _auth_header(app, uid)
 
     resp = client.get("/api/me", headers=headers)
     assert resp.status_code == 404
@@ -99,9 +100,9 @@ def test_get_me_usuario_inativo_retorna_404(client, app, supabase_mock):
 
 # ------------------------------------------------------------------ PATCH /api/me
 
-def test_patch_me_atualiza_full_name(client, app, supabase_mock):
+def test_patch_me_atualiza_full_name(client, app):
     uid = _create_user(app, phone="+5511999990003")
-    headers = _auth_header(app, supabase_mock, uid)
+    headers = _auth_header(app, uid)
 
     resp = client.patch("/api/me", json={"full_name": "Maria Atualizada"}, headers=headers)
     assert resp.status_code == 200
@@ -112,9 +113,9 @@ def test_patch_me_atualiza_full_name(client, app, supabase_mock):
         assert user.full_name == "Maria Atualizada"
 
 
-def test_patch_me_tenta_alterar_role_retorna_400(client, app, supabase_mock):
+def test_patch_me_tenta_alterar_role_retorna_400(client, app):
     uid = _create_user(app, phone="+5511999990004")
-    headers = _auth_header(app, supabase_mock, uid)
+    headers = _auth_header(app, uid)
 
     resp = client.patch("/api/me", json={"role": "organizadora"}, headers=headers)
     assert resp.status_code == 400
@@ -122,7 +123,7 @@ def test_patch_me_tenta_alterar_role_retorna_400(client, app, supabase_mock):
 
 def test_patch_me_phone_diferente_dispara_otp_e_nao_atualiza(client, app, supabase_mock):
     uid = _create_user(app, phone="+5511999990005")
-    headers = _auth_header(app, supabase_mock, uid)
+    headers = _auth_header(app, uid)
     supabase_mock.auth.sign_in_with_otp.return_value = MagicMock()
 
     resp = client.patch("/api/me", json={"phone": "+5511888880005"}, headers=headers)
@@ -139,7 +140,7 @@ def test_patch_me_phone_diferente_dispara_otp_e_nao_atualiza(client, app, supaba
 
 def test_patch_me_phone_igual_nao_dispara_otp(client, app, supabase_mock):
     uid = _create_user(app, phone="+5511999990006")
-    headers = _auth_header(app, supabase_mock, uid)
+    headers = _auth_header(app, uid)
 
     resp = client.patch("/api/me", json={"phone": "+5511999990006"}, headers=headers)
     assert resp.status_code == 200
@@ -150,7 +151,7 @@ def test_patch_me_phone_igual_nao_dispara_otp(client, app, supabase_mock):
 
 def test_confirm_phone_valido_atualiza_telefone(client, app, supabase_mock):
     uid = _create_user(app, phone="+5511999990007", pending_phone="+5511888880007")
-    headers = _auth_header(app, supabase_mock, uid)
+    headers = _auth_header(app, uid)
     supabase_mock.auth.verify_otp.return_value = MagicMock()
 
     resp = client.post("/api/me/phone/confirm", json={"token": "123456"}, headers=headers)
@@ -162,9 +163,9 @@ def test_confirm_phone_valido_atualiza_telefone(client, app, supabase_mock):
         assert user.pending_phone is None
 
 
-def test_confirm_phone_sem_pending_retorna_400(client, app, supabase_mock):
+def test_confirm_phone_sem_pending_retorna_400(client, app):
     uid = _create_user(app, phone="+5511999990008")
-    headers = _auth_header(app, supabase_mock, uid)
+    headers = _auth_header(app, uid)
 
     resp = client.post("/api/me/phone/confirm", json={"token": "123456"}, headers=headers)
     assert resp.status_code == 400
@@ -172,7 +173,7 @@ def test_confirm_phone_sem_pending_retorna_400(client, app, supabase_mock):
 
 def test_confirm_phone_otp_invalido_retorna_401(client, app, supabase_mock):
     uid = _create_user(app, phone="+5511999990009", pending_phone="+5511888880009")
-    headers = _auth_header(app, supabase_mock, uid)
+    headers = _auth_header(app, uid)
     supabase_mock.auth.verify_otp.side_effect = Exception("invalid otp")
 
     resp = client.post("/api/me/phone/confirm", json={"token": "000000"}, headers=headers)
@@ -183,9 +184,9 @@ def test_confirm_phone_otp_invalido_retorna_401(client, app, supabase_mock):
         assert user.phone == "+5511999990009"  # nao mudou
 
 
-def test_confirm_phone_token_formato_invalido_retorna_400(client, app, supabase_mock):
+def test_confirm_phone_token_formato_invalido_retorna_400(client, app):
     uid = _create_user(app, phone="+5511999990010", pending_phone="+5511888880010")
-    headers = _auth_header(app, supabase_mock, uid)
+    headers = _auth_header(app, uid)
 
     resp = client.post("/api/me/phone/confirm", json={"token": "abc"}, headers=headers)
     assert resp.status_code == 400
@@ -193,18 +194,18 @@ def test_confirm_phone_token_formato_invalido_retorna_400(client, app, supabase_
 
 # ------------------------------------------------------------------ DELETE /api/me
 
-def test_delete_me_retorna_204(client, app, supabase_mock):
+def test_delete_me_retorna_204(client, app):
     uid = _create_user(app, phone="+5511999990011")
-    headers = _auth_header(app, supabase_mock, uid)
+    headers = _auth_header(app, uid)
 
     resp = client.delete("/api/me", headers=headers)
     assert resp.status_code == 204
 
 
-def test_delete_me_anonimiza_dados(client, app, supabase_mock):
+def test_delete_me_anonimiza_dados(client, app):
     uid = _create_user(app, phone="+5511999990012", full_name="Maria Secreta",
                        avatar_url="https://exemplo.com/foto.jpg")
-    headers = _auth_header(app, supabase_mock, uid)
+    headers = _auth_header(app, uid)
 
     client.delete("/api/me", headers=headers)
 
@@ -217,9 +218,9 @@ def test_delete_me_anonimiza_dados(client, app, supabase_mock):
         assert user.phone.startswith("del_")
 
 
-def test_delete_me_impede_acesso_posterior(client, app, supabase_mock):
+def test_delete_me_impede_acesso_posterior(client, app):
     uid = _create_user(app, phone="+5511999990013")
-    headers = _auth_header(app, supabase_mock, uid)
+    headers = _auth_header(app, uid)
 
     client.delete("/api/me", headers=headers)
 
@@ -229,7 +230,7 @@ def test_delete_me_impede_acesso_posterior(client, app, supabase_mock):
 
 def test_delete_me_chama_supabase_delete_user(client, app, supabase_mock):
     uid = _create_user(app, phone="+5511999990014")
-    headers = _auth_header(app, supabase_mock, uid)
+    headers = _auth_header(app, uid)
 
     client.delete("/api/me", headers=headers)
 
