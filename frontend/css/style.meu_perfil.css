@@ -32,18 +32,29 @@ h2 {
     font-weight: 400;
     color:#6E6F70;
 }
-#caixa_vermelha {
+#caixas {
+    display: flex;
+    flex-direction: row;
+    gap: 14px;
+}
+.caixa{
+    width: 50%;
     height: 110px;
-    background-color: #F8DDDA;
     border-radius: 20px;
-    margin: 0px 10px;
-    color: #D35746;
     display: flex;
     flex-direction: column;
     justify-content: center;
 
-    padding: 19px 15px; 
+    padding: 19px 10px 19px 10px; 
     margin-bottom: 22px;
+}
+#caixa_vermelha {
+    background-color: #F8DDDA;
+    color: #D35746;
+}
+#caixa_verde {
+    background-color: #CCE0E2;
+    color: #00636A;
 }
 .icone_participou {
     display: flex;
@@ -56,6 +67,33 @@ span {
 p {
     font-size: 13px;
     font-weight: 400;
+}
+.botoes {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+    margin-bottom: 14px;
+}
+.botao {
+    height: 48px;
+    border-radius: 11px;
+    border: none;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+
+    font-size: 16px;
+    font-weight: 600;
+    padding-left: 15px;
+    gap: 7px;
+}
+#botao_vermelho {
+    background-color: #F8DDDA;
+    color: #D35746;
+}
+#botao_azul {
+    background-color: #CCE3F2;
+    color: #0072B7;
 }
 .menu {
     margin: 0px 29px;
@@ -76,6 +114,7 @@ h3, a {
 }
 a {
     color:#3E3F41;
+    text-decoration: none;
 }
 #texto_sair {
     color: #D35746;
