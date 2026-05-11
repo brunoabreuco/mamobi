@@ -8,16 +8,24 @@
 </head>
 <body>
     <header>
-        <h1>Titulo</h1>
+        <div class="conteudo">
+            <div class="titulo_aviso">
+                <h1>Titulo</h1>
+                <!--exclusivo para tela de Avisos-->
+                <span class="nao_lidos">2 não lidas</span>
+            </div>
 
-        <!--exclusivo para tela de Ações Comunitárias-->
-        <input type="text" placeholder="Buscar eventos...">
-        <!--exclusivo para tela de Ações Comunitárias-->
-        <button>Filtros</button>
-
-        <!--exclusivo para tela de Avisos-->
-        <button>2 não lidas</button>
-
+            <!--exclusivo para tela de Ações Comunitárias-->
+            <div class="barra_pesquisa">
+                <img src="./images/header-icone-lupa.svg">
+                <input type="text" placeholder="Buscar eventos...">
+            </div>
+            <!--exclusivo para tela de Ações Comunitárias-->
+            <button class="filtros">
+                <img src="./images/header-icone-filtro.svg">
+                Filtros
+            </button>
+        </div>
         <hr>
     </header>
 </body>
