@@ -132,6 +132,9 @@ def update_me():
         user.pending_phone = payload.phone
         phone_change_pending = True
 
+    if payload.neighborhood is not None:
+        user.neighborhood = payload.neighborhood
+
     try:
         db.session.commit()
     except Exception as e:
