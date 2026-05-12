@@ -1,6 +1,7 @@
 import hashlib
 from flask import Blueprint, g, jsonify, request, current_app
 from pydantic import ValidationError
+import os
 
 from maes_mobilizadoras.limiter import limiter
 from maes_mobilizadoras.models import Event, User, db
@@ -306,3 +307,12 @@ def logout():
     # JWT stateless: logout é do lado do cliente (descarte do token).
     # Revogação server-side (denylist) fica fora do escopo desta task.
     return jsonify({"message": "logged_out"}), 200
+
+# =============================================================================
+# INJEÇÃO DO ENV NO FRONTEND
+# =============================================================================
+@api.get('/config')
+def frontend_config():
+    return jsonify({
+        'api_base': os.environ.get('API_BASE', '')
+    })

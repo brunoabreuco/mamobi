@@ -14,10 +14,11 @@ BASE_DIR = Path(__file__).parent.parent
 def create_app(test_config: dict | None = None):
     load_dotenv()
 
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder=str(BASE_DIR.parent / 'frontend'), static_url_path='')
 
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.config["SECRET_KEY"] = os.environ["JWT_SECRET"]
 
     if test_config is not None:
         app.config.from_mapping(test_config)
@@ -30,9 +31,6 @@ def create_app(test_config: dict | None = None):
         os.environ["SUPABASE_SERVICE_ROLE_KEY"],
     )
     app.extensions["supabase"] = supabase
-
-    with app.app_context():
-        db.create_all()
 
     from maes_mobilizadoras.api_routes import api, auth_bp
     app.register_blueprint(api)      # /api/*
