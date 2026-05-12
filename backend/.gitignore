@@ -1,0 +1,12 @@
+.venv
+__pycache__
+*.db
+.pytest_cache
+*.log
+supabase/.env
+supabase/.temp/
+supabase/.branches/
+.env
+/node_modules
+*.pyc
+*.egg-info/

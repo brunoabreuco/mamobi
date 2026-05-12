@@ -1,0 +1,104 @@
+users
+Armazena todas as usuárias da plataforma. É a tabela central do sistema — quase todas as outras se relacionam com ela. O telefone é o identificador principal, usado no login.
+Campos:
+  id: uuid
+  phone: varchar(20)
+  full_name: varchar(150)
+  neighborhood: varchar(100)
+  role: varchar(20)
+  avatar_url: nullable text
+  is_active: boolean
+  created_at: timestamptz
+  updated_at: timestamptz
+
+auth_otp
+Controla os códigos SMS enviados no momento do login. Cada vez que uma usuária tenta entrar, um registro é criado aqui com o código, o prazo de validade e o contador de tentativas.
+Campos:
+  id: uuid
+  phone: varchar(20)
+  code: char(6)
+  expires_at: timestamptz
+  used_at: nullable timestamptz
+  attempts: integer
+  created_at: timestamptz
+
+event_categories
+Tabela simples de categorias dos eventos — como Saúde, Educação, Cultura, etc. Permite filtrar e organizar visualmente os eventos no calendário com ícones e cores diferentes por tipo.
+Campos:
+  id: auto increment integer
+  name: varchar(80)
+  icon: nullable varchar(50)
+  color: nullable char(7)
+
+events
+Armazena todos os eventos comunitários cadastrados. É a tabela mais importante do negócio — contém data, hora, local, organizadora, status do evento e o contador de participantes.
+Campos:
+  id: uuid
+  title: varchar(200)
+  description: nullable text
+  event_datetime: timestamptz
+  location_name: varchar(200)
+  location_lat: nullable decimal(9, 6)
+  location_lng: nullable decimal(9, 6)
+  category_id: integer foreign key on event_categories
+  organizer_id: uuid foreign key on users
+  max_participants: nullable integer
+  participant_count: integer
+  status: varchar(20)
+  cover_image_url: nullable text
+  created_at: timestamptz
+  updated_at: timestamptz
+
+event_participations
+Resolve o relacionamento N:N entre usuárias e eventos. Cada linha representa uma usuária confirmando presença em um evento. Também registra se ela de fato compareceu após o evento acontecer.
+Campos:
+  id: uuid
+  event_id: uuid foreign key on events
+  user_id: uuid foreign key on users
+  status: varchar(20)
+  registered_at: timestamptz
+
+notifications
+Armazena todas as notificações e comunicados enviados na plataforma — lembretes de eventos, confirmações de participação e comunicados das mobilizadoras. Define para qual perfil a notificação foi direcionada.
+Campos:
+  id: uuid
+  event_id: uuid foreign key on events
+  sender_id: uuid foreign key on sync_queue
+  type: varchar(30)
+  title: varchar(150)
+  message: varchar(300)
+  target_role: varchar(20)
+  scheduled_at: nullable timestamptz
+  sent_at: nullable timestamptz
+  created_at: timestamptz
+
+notification_reads
+Controla quais usuárias já leram quais notificações. Sem essa tabela separada não seria possível saber com eficiência quantas notificações não lidas cada usuária tem.
+  id: uuid
+  notification_id: uuid foreign key on notifications
+  user_id: uuid foreign key on users
+  read_at: timestamptz
+
+fcm_tokens
+Guarda os tokens de dispositivo de cada usuária para envio de push notifications via Firebase. Uma usuária pode ter mais de um token caso use o app em mais de um dispositivo.
+Campos:
+  user_id: uuid
+  token: text
+  device_type: nullable varchar(10)
+  is_active: boolean
+  last_used_at: nullable timestamptz
+  created_at: timestamptz
+
+sync_queue
+Fila de operações feitas offline que ainda não foram sincronizadas com o servidor. Quando a usuária cadastra um evento sem internet, a operação fica aqui até a conexão ser restabelecida.
+Campos:
+  id: uuid
+  user_id: uuid foreign key on users
+  entity_type: varchar(50)
+  entity_id: uuid
+  operation: varchar(10)
+  payload: jsonb
+  status: varchar(20)
+  error_message: nullable text
+  created_at: timestamptz
+  processed_at: nullable timestamptz
