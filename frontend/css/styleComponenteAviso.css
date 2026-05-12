@@ -1,0 +1,77 @@
+.c-componenteAviso * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif;
+}
+.c-componenteAviso .conteudo {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 15px 20px 20px 15px;
+}
+.c-componenteAviso .direita {
+    display: flex;
+    flex-direction: row;
+}
+.c-componenteAviso .container_imagem {
+
+    flex-shrink: 0;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background-color: #99C1C5;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+}
+.c-componenteAviso .icone {
+    width: 19px;
+    height: 19px;
+}
+.c-componenteAviso h1 {
+    font-size: 12px;
+    font-weight: 500;
+    color: black;
+    margin-bottom: 3px;
+}
+.c-componenteAviso h2 {
+    font-size: 9px;
+    font-weight: 300;
+    color: #3E3F41;
+    margin-bottom: 3px;
+}
+.c-componenteAviso p {
+    font-size: 7px;
+    font-weight: 300;
+    color: #6E6F70;
+}
+.c-componenteAviso .novo {
+    width: 5px;
+    height: 5px;
+}
+.c-componenteAviso hr {
+    width: 100%;
+    height: 0.5px;
+    border: none;
+    background-color: #CFCFCF;
+}
+.c-componenteAviso .novo_evento {
+    display: none;
+}
+.c-componenteAviso .lembrete {
+    display: none;
+}
+.c-componenteAviso hr {
+    width: 100%;
+    height: 1.5px;
+    border: none;
+    background-color: #CFCFCF;
+}
+
+.c-componenteAviso .conteudo_hr {
+    display: flex;
+    flex-direction: column;
+}

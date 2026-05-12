@@ -1,0 +1,27 @@
+.c-componenteproximosEventos * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif;
+}
+.c-componenteproximosEventos div {
+    background-color: #E6E5E5;
+    border-radius: 9px;
+    height: 53px;
+    padding: 12px 0px 14px 14px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    margin-left: 12px;
+    margin-right: 12px;
+    gap: 5px;
+}
+.c-componenteproximosEventos p.data {
+    color: #0072B7;
+    font-size: 10px;
+    font-weight: 500;
+}
+.c-componenteproximosEventos p.descricao {
+    color: black;
+    font-size: 12px;
+    font-weight: 500;
+}

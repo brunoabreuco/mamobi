@@ -1,0 +1,87 @@
+.c-componenteEventoDetalhado * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif;
+}
+.c-componenteEventoDetalhado .conteudo {
+    display: flex;
+    flex-direction: row;
+    padding: 7px 22px 7px 22px;
+    gap: 8px;
+}
+.c-componenteEventoDetalhado .data {
+    background-color: #CCE0E2;
+    width: 35px;
+    height: 35px;
+    border-radius: 11px;
+
+    font-size: 16px;
+    font-weight: 500;
+    color:#00636A;
+    text-align: center;
+    line-height: 12px;
+}
+.c-componenteEventoDetalhado .data span {
+    font-size: 8px;
+}
+.c-componenteEventoDetalhado .classificacoes {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    margin-bottom: 3px;
+}
+.c-componenteEventoDetalhado .classificacao {
+    border-radius: 11px;
+    font-size: 7px;
+    font-weight: 500;
+    text-align: center;
+    margin-right: 4px;
+}
+.c-componenteEventoDetalhado #tipo_evento {
+    display: block;
+    width: 39px;
+    height: 14px;
+    background-color: #CCE0E2;
+    color: #00636A;
+    line-height: 14px;;
+}
+.c-componenteEventoDetalhado #confirmado {
+    display: block;
+    width: 71px;
+    height: 14px;
+    background-color: #F8DDDA;
+    color: #D35746;
+    line-height: 14px;;
+}
+.c-componenteEventoDetalhado h1 {
+    font-size: 15px;
+    font-weight: 500;
+}
+.c-componenteEventoDetalhado .icon_info {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 9px;
+    gap: 2px;
+}
+.c-componenteEventoDetalhado img {
+    width: 10px;
+    height: 10px;
+}
+.c-componenteEventoDetalhado .info {
+    font-size: 10px;
+    color: #6E6F70;
+}
+.c-componenteEventoDetalhado .quem_organizou {
+    font-size: 6px;
+    color: #6E6F70;
+    margin-top: 5px;
+}
+.c-componenteEventoDetalhado hr {
+    width: 100%;
+    height: 0.5px;
+    border: none;
+    background-color: #CFCFCF;
+}

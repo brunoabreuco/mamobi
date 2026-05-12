@@ -1,0 +1,107 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif;
+}
+
+.active {
+    background-color: #00636A;
+    color: #FAF6F4;
+}
+.calendar-container {
+    min-height: 100wh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.calendar {
+    width: 336px;
+    height: 243px;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    margin-bottom: 125px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 0px 36px;
+}
+#monthYear {
+    font-size: 14px;
+    font-weight: 600; 
+    line-height: 24px;
+}
+
+.header button {
+    background-color: transparent;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+}
+.header img {
+    height: 8.39px;
+    width: 4.2px;
+}
+
+.days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    margin-top: 17px;
+    margin-bottom: 5px;
+}
+.day {
+    font-size: 10px;
+    font-weight: 500; 
+    line-height: 24px;
+    text-align: center;
+
+}
+.dates {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+
+    
+}
+.date {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+    font-size: 10px;
+    font-weight: 500;
+
+    border-radius: 10px;
+    padding: 12px 6px;
+}
+.date:active {
+    background-color: #E8E8E8;
+}
+.inactive { /* é para os dias que não pertencem ao mês atual */
+    color: #9F9FA0;
+}
+
+#proximos-eventos-container {
+  display: block;
+  padding: 10px;
+  margin: 0 auto;
+}
+#proximos-eventos-container h1 {
+  font-size: 20px;
+  margin-left: 25px;
+  margin-bottom: 13px;
+}
+@media screen and (min-width: 400px) {
+  #proximos-eventos-container {
+    max-width: 400px;
+  }
+}
