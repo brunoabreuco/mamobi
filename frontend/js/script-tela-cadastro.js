@@ -1,8 +1,10 @@
 // ============================================================
-// CONFIGURAÇÃO
-// Atualize REDIRECT_APOS_LOGIN quando a página destino estiver disponível.
+// INICIALIZAÇÃO
+// Todo o código fica dentro de uma IIFE async para permitir await no topo.
 // ============================================================
-const API_BASE = 'http://127.0.0.1:5000'; // DEV — substituir pela variável de ambiente quando o padrão for definido
+(async () => {
+
+const { api_base: API_BASE } = await fetch('/api/config').then(r => r.json());
 const REDIRECT_APOS_LOGIN = '/home.html';
 
 // ============================================================
@@ -313,13 +315,10 @@ botaoReenviar.addEventListener('click', async () => {
 
 // ============================================================
 // ETAPA 3 — NOME E BAIRRO
-//
-// ATENÇÃO: o campo "neighborhood" não está em UserUpdateRequest
-// (schemas.py). Apenas full_name é persistido via PATCH /api/me.
-// Quando o backend expor neighborhood no schema, adicionar ao body abaixo.
 // ============================================================
 const botaoFinal = document.querySelector('.etapa04-nome-bairro a');
 const inputNome = document.getElementById('name');
+const selectBairro = document.querySelector('.etapa04-nome-bairro select');
 let enviandoPerfil = false;
 
 botaoFinal.addEventListener('click', async (e) => {
@@ -329,6 +328,8 @@ botaoFinal.addEventListener('click', async (e) => {
     limparErro('erro-perfil');
 
     const nome = inputNome.value.trim();
+    const bairro = selectBairro.value;
+
     if (!nome) {
         mostrarErro('erro-perfil', 'Informe seu nome para continuar.');
         return;
@@ -340,7 +341,7 @@ botaoFinal.addEventListener('click', async (e) => {
     botaoFinal.style.pointerEvents = 'none';
 
     try {
-        await apiPatch('/api/me', { full_name: nome });
+        await apiPatch('/api/me', { full_name: nome, neighborhood: bairro });
         window.location.href = REDIRECT_APOS_LOGIN;
     } catch (err) {
         mostrarErro('erro-perfil', traduzirErro(err.code));
@@ -349,3 +350,5 @@ botaoFinal.addEventListener('click', async (e) => {
         enviandoPerfil = false;
     }
 });
+
+})();
