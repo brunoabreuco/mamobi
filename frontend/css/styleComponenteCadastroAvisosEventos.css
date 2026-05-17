@@ -1,0 +1,13 @@
+@import url("global.css");
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif;
+}
+body {
+    background-color: transparent;
+}
+#container-principal{
+    background-color: var(--background-primary-color);
+}
