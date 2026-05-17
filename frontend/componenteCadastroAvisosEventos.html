@@ -8,54 +8,58 @@
 </head>
 <body>
     <div id="container-principal">
-        <div id="detalhes-do-evento">
-            <div class="header">
-                <h2>Detalhes do evento</h2>
-                <button></button>
+
+        <div class="header">
+            <h2>Detalhes do evento</h2>
+            <div id="header-botoes">
+                <button><img src="./images/icone-aviso-preto.svg"></button>
                 <button><img src="./images/close_X.svg"></button>
             </div>
+        </div>
 
-            <hr>
+        <hr>
+
+        <div id="detalhes-do-evento">
+            
 
             <span id="tipo_evento">Oficina</span>
-            <h1 id="titulo_evento">Oficina de Artesanato</h1>
+            <h1>Oficina de Artesanato</h1>
             <span id="descricao_evento">Aprenda técnicas de crochê e tricô. Traga seus próprios materiais.</span>
 
-            <div class="caixa_info">
-                <img src="./images/icone-verde-claro-calendario.svg">
-                <div class="dois_textos_info">
-                    <h3 class="texto_grande_preto">domingo, 19 de abril</h3>
-                    <span class="texto_pequeno_cinza">10:00</span>
+            <div id="conjunto-detalhes">
+                <div class="caixa_info">
+                    <img src="./images/icone-verde-claro-calendario.svg">
+                    <div class="dois_textos_info">
+                        <h3 class="texto_grande_preto">domingo, 19 de abril</h3>
+                        <span class="texto_pequeno_cinza">10:00</span>
+                    </div>
+                </div>
+
+                <div class="caixa_info">
+                    <img src="./images/icone-verde-claro-pin.svg">
+                    <div class="dois_textos_info">
+                        <h3 class="texto_grande_preto">Local</h3>
+                        <span class="texto_pequeno_cinza">Sala Multiuso - Rua das Flores, 123</span>
+                    </div>
+                </div>
+
+                <div class="caixa_info">
+                    <img src="./images/icone-verde-claro-pessoa.svg">
+                    <div class="dois_textos_info">
+                        <h3 class="texto_grande_preto">Organizado por</h3>
+                        <span class="texto_pequeno_cinza">Ana Santos</span>
+                    </div>
+                </div>
+
+                <div class="caixa_info">
+                    <img src="./images/icone-verde-claro-duas-pessoas.svg">
+                    <div class="dois_textos_info">
+                        <h3 class="texto_grande_preto">Participantes</h3>
+                        <span class="texto_pequeno_cinza">8 pessoas confirmadas</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="caixa_info">
-                <img src="./images/icone-verde-claro-pin.svg">
-                <div class="dois_textos_info">
-                    <h3 class="texto_grande_preto">Local</h3>
-                    <span class="texto_pequeno_cinza">Sala Multiuso - Rua das Flores, 123</span>
-                </div>
-            </div>
-
-            <div class="caixa_info">
-                <img src="./images/icone-verde-claro-pessoa.svg">
-                <div class="dois_textos_info">
-                    <h3 class="texto_grande_preto">Organizado por</h3>
-                    <span class="texto_pequeno_cinza">Ana Santos</span>
-                </div>
-            </div>
-
-            <div class="caixa_info">
-                <img src="./images/icone-verde-claro-duas-pessoas.svg">
-                <div class="dois_textos_info">
-                    <h3 class="texto_grande_preto">Participantes</h3>
-                    <span class="texto_pequeno_cinza">8 pessoas confirmadas</span>
-                </div>
-            </div>
-
-            <hr>
-
-            <button>Confirmar Presença</button>
         </div>
 
         <div id="avisos-evento">
@@ -63,7 +67,39 @@
         </div>
 
         <div id="criar-evento">
+            <form>
+                <fieldset>
+                    <label for="nome-evento">Nome do Evento</label>
+                    <input type="text" id="nome-evento" placeholder="Ex: Reunião do Conselho" required>
+                    <br>
 
+                    <label for="tipo-evento">Tipo de Evento</label>
+                    <select name="tipo-evento" required>
+                        <option value="a">A</option>
+                        <option value="b">B</option>
+                        <option value="c">C</option>
+                        <option value="d">D</option>
+                        <option value="e">E</option>
+                    </select>
+                    <br>
+
+                    <div>
+                        <label for="data">Data</label>
+                        <input type="date" id="data" required>
+
+                        <label for="time">Horário</label>
+                        <input type="time" required>
+                    </div>
+                    <br>
+
+                    <label for="local-evento">Local</label>
+                    <input type="text" id="local-evento" placeholder="Ex: Centro Comunitário" required>
+                    <br>
+
+                    <label for="descricao">Descrição</label>
+                    <textarea id="descricao" name="userReview" placeholder="Descreva o evento..." cols="100" rows="6"></textarea>
+                </fieldset>
+            </form>
         </div>
 
         <div id="criar-aviso">
@@ -73,6 +109,11 @@
         <div id="adicionar-mobilizadora">
 
         </div>
+
+        <hr>
+        <div id="footer">
+            <button id="confirmar-presenca">Confirmar Presença</button>
+        </div>       
     </div>
 </body>
 </html>

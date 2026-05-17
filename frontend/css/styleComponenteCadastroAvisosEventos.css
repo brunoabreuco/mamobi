@@ -10,4 +10,134 @@ body {
 }
 #container-principal{
     background-color: var(--background-primary-color);
+    position: fixed;
+    bottom: 0;
+    border-radius: 30px 30px 0 0;
+    width: 100%;
+}
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 17px 30px 17px 22px;
+}
+h2 {
+    font-size: 18px;
+    font-weight: 600;
+}
+#header-botoes {
+    display: flex;
+    gap: 11px;
+}
+.header button {
+    background-color: transparent;
+    border: none;
+    
+}
+.header button img{
+    width: 24px;
+    height: 24px;
+    vertical-align: middle;
+}
+hr {
+    background-color: var(--hr-color);
+    width: 100%;
+    height: 1.5px;
+    border: none;
+}
+
+
+
+
+
+#detalhes-do-evento {
+    padding: 0 22px;
+    display: none;
+}
+#tipo_evento {
+    display: block;
+    background-color: var(--details-green);
+    border-radius: 11px;
+    width: 62px;
+    height: 22px;
+    margin-top: 20px;
+    margin-bottom: 12px;
+
+    color: var(--text-details-green);
+    font-size: 11px;
+    line-height: 21px;;
+    font-weight: 500;
+    text-align: center;
+}
+h1 {
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 36px;
+    margin-bottom: 7px;
+}
+#descricao_evento {
+    color: var(--text-tertiary-color);
+    font-size: 16px;
+    font-weight: 400;
+    margin-bottom: 20px;
+}
+#conjunto-detalhes {
+    display: flex;
+    flex-direction: column;
+    gap: 14.5px;
+    margin-top: 20px;
+    margin-bottom: 70px;
+}
+.caixa_info {
+    display: flex;
+    flex-direction: row;
+    gap: 9px;
+}
+.caixa-info img {
+    width: 43px;
+    height: 43px;
+}
+.texto_grande_preto {
+    font-size: 16px;
+    font-weight: 500;
+}
+.texto_pequeno_cinza {
+    color: var(--text-tertiary-color);
+    font-size: 13px;
+    font-weight: 500;
+    margin-top: 1px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#footer {
+    padding: 18px 25px;
+}
+#confirmar-presenca {
+    width: 100%;
+    height: 48px;
+    border: none;
+    border-radius: 15px;
+    background-color: var(--primary-color);
+    display: block;
+    margin: 0 auto;
+
+    color: #FFFFFF;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
 }
