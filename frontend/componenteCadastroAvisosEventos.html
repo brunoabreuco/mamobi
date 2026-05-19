@@ -124,14 +124,32 @@
         </div>
 
         <div id="criar-aviso">
+            <fieldset>
+                <label for="selecionar-evento">Selecione o Evento</label><br>
+                <select id="tipo-evento" name="selecionar-evento" required>
+                    <option value="a">A</option>
+                    <option value="b">B</option>
+                    <option value="c">C</option>
+                    <option value="d">D</option>
+                    <option value="e">E</option>
+                </select>
+                <br>
 
+                <label for="msg-aviso">Mensagem do Aviso</label><br>
+                <div class="msg-aviso">
+                    <textarea id="descricao" name="userReview" placeholder="Ex: Lembrete importante! Não esqueça de trazer seus materiais..." cols="100" rows="6"></textarea>
+                    <button id="textarea-btn">
+                        <img src="./images/icone-microfone-verde.svg">
+                    </button>
+                </div>
+            </fieldset>
         </div>
 
         <div id="adicionar-mobilizadora">
 
         </div>
 
-        <hr>
+        <hr id="hr-footer">
         <div id="footer">
             <button id="confirmar-presenca">Confirmar Presença</button>
         </div>       
