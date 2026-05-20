@@ -16,6 +16,8 @@ def app():
         "TESTING": True,
         "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
         "SECRET_KEY": "test-secret-key-32chars-padding!!",
+        "RATELIMIT_STORAGE_URI": "memory://",
+        "RATELIMIT_ENABLED": True,   # flask-limiter 4.x desabilita quando TESTING=True
     }
     with patch.dict(os.environ, _TEST_ENV):
         with patch("maes_mobilizadoras.app_factory.create_client") as mock_supabase:
