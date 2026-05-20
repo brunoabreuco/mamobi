@@ -7,8 +7,8 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 STATUS_VALUES = Literal["draft", "scheduled", "active", "cancelled"]
 
-# Campos que PATCH nunca pode alterar. A verificação é feita na rota
-# (não no Pydantic) para que o erro seja retornado por campo, não como "geral".
+ROLE_VALUES = Literal["participante", "organizadora", "coordenadora"]
+
 CAMPOS_BLOQUEADOS_PATCH = frozenset({"organizer_id", "participant_count"})
 
 
@@ -38,9 +38,6 @@ class AcaoData(BaseModel):
 
 
 class AcaoPatchRequest(BaseModel):
-    """Schema para PATCH parcial. Todos os campos são opcionais.
-    organizer_id e participant_count são bloqueados na camada de rota."""
-
     title: Optional[str] = Field(None, min_length=1, max_length=200)
     description: Optional[str] = None
     event_datetime: Optional[datetime] = None
@@ -81,7 +78,9 @@ class AcaoResponse(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
 CAMPOS_IMUTAVEIS = {"role", "id"}
+
 
 class UserResponse(BaseModel):
     id: str
@@ -111,3 +110,21 @@ class UserUpdateRequest(BaseModel):
 
 class PhoneConfirmRequest(BaseModel):
     token: str = Field(..., min_length=6, max_length=6, pattern=r"^\d{6}$")
+
+
+class RoleUpdateRequest(BaseModel):
+    """Body do PATCH /admin/users/:id/role."""
+    role: ROLE_VALUES
+
+
+class UserAdminResponse(BaseModel):
+    """Perfil retornado na listagem e alteração administrativa."""
+    id: str
+    full_name: str
+    phone: str
+    neighborhood: Optional[str] = None
+    role: str
+    is_active: bool
+    avatar_url: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
