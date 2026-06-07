@@ -8,7 +8,9 @@ from maes_mobilizadoras.models import Event, User, db
 from maes_mobilizadoras.schemas import (
     AcaoData,
     AcaoMetadata,
+    AcaoPatchRequest,
     AcaoResponse,
+    CAMPOS_BLOQUEADOS_PATCH,
     PhoneConfirmRequest,
     UserResponse,
     UserUpdateRequest,
@@ -52,7 +54,7 @@ def _anonymize(user: User) -> None:
 
 
 # =============================================================================
-# ENDPOINT DE AÇÕES COMUNITÁRIAS
+# ENDPOINTS DE AÇÕES COMUNITÁRIAS
 # =============================================================================
 
 @api.route("/acoes", methods=["POST"])
@@ -84,6 +86,136 @@ def create_acao():
     )
 
     return jsonify(response_model.model_dump(mode="json")), 201
+
+
+@api.route("/acoes", methods=["GET"])
+@require_auth
+def list_acoes():
+    """Lista ações com paginação e filtros opcionais.
+
+    Query params:
+      page        int  (default 1)
+      page_size   int  (default 20, max 100)
+      status      str  filtra por status exato
+      category_id int  filtra por categoria
+      organizer_id str filtra por organizadora
+    """
+    page = max(request.args.get("page", 1, type=int), 1)
+    page_size = min(max(request.args.get("page_size", 20, type=int), 1), 100)
+
+    status_filter = request.args.get("status")
+    category_id_filter = request.args.get("category_id", type=int)
+    organizer_id_filter = request.args.get("organizer_id")
+
+    query = db.session.query(Event)
+
+    if status_filter:
+        query = query.filter(Event.status == status_filter)
+    if category_id_filter is not None:
+        query = query.filter(Event.category_id == category_id_filter)
+    if organizer_id_filter:
+        query = query.filter(Event.organizer_id == organizer_id_filter)
+
+    total = query.count()
+    events = query.offset((page - 1) * page_size).limit(page_size).all()
+    pages = -(-total // page_size) if total > 0 else 0  # divisão com teto
+
+    items = [
+        AcaoResponse(
+            data=AcaoData.model_validate(e),
+            metadata=AcaoMetadata.model_validate(e),
+        ).model_dump(mode="json")
+        for e in events
+    ]
+
+    return jsonify({
+        "items": items,
+        "pagination": {
+            "page": page,
+            "page_size": page_size,
+            "total": total,
+            "pages": pages,
+        },
+    }), 200
+
+
+@api.route("/acoes/<event_id>", methods=["GET"])
+@require_auth
+def get_acao(event_id):
+    event = db.session.get(Event, event_id)
+    if event is None:
+        return jsonify({"error": "Ação não encontrada"}), 404
+
+    response_model = AcaoResponse(
+        data=AcaoData.model_validate(event),
+        metadata=AcaoMetadata.model_validate(event),
+    )
+    return jsonify(response_model.model_dump(mode="json")), 200
+
+
+@api.route("/acoes/<event_id>", methods=["PATCH"])
+@require_auth
+def update_acao(event_id):
+    body = request.get_json(silent=True)
+    if not body:
+        return jsonify({"error": "Body deve ser JSON válido"}), 400
+
+    # Verifica campos proibidos antes do Pydantic para retornar erro por campo.
+    campos_proibidos = CAMPOS_BLOQUEADOS_PATCH & set(body.keys())
+    if campos_proibidos:
+        errors = {campo: "Campo não pode ser alterado" for campo in campos_proibidos}
+        return jsonify({"errors": errors}), 400
+
+    try:
+        patch_data = AcaoPatchRequest(**body)
+    except ValidationError as e:
+        return jsonify({"errors": _pydantic_errors_to_dict(e)}), 400
+
+    event = db.session.get(Event, event_id)
+    if event is None:
+        return jsonify({"error": "Ação não encontrada"}), 404
+
+    # exclude_unset=True garante que apenas os campos enviados na requisição
+    # são aplicados; campos omitidos não sobrescrevem valores existentes.
+    updates = patch_data.model_dump(exclude_unset=True)
+    for field, value in updates.items():
+        setattr(event, field, value)
+
+    try:
+        db.session.commit()
+        db.session.refresh(event)
+    except Exception as e:
+        current_app.logger.exception(e)
+        db.session.rollback()
+        return jsonify({"error": "Failed to reach database"}), 500
+
+    response_model = AcaoResponse(
+        data=AcaoData.model_validate(event),
+        metadata=AcaoMetadata.model_validate(event),
+    )
+    return jsonify(response_model.model_dump(mode="json")), 200
+
+
+@api.route("/acoes/<event_id>", methods=["DELETE"])
+@require_auth
+def delete_acao(event_id):
+    event = db.session.get(Event, event_id)
+    if event is None:
+        return jsonify({"error": "Ação não encontrada"}), 404
+
+    if event.organizer_id != g.current_user_id:
+        return jsonify({"error": "Sem permissão para remover esta ação"}), 403
+
+    try:
+        db.session.delete(event)
+        db.session.commit()
+    except Exception as e:
+        current_app.logger.exception(e)
+        db.session.rollback()
+        return jsonify({"error": "Failed to reach database"}), 500
+
+    return "", 204
+
 
 # =============================================================================
 # ENDPOINT DE PERFIL

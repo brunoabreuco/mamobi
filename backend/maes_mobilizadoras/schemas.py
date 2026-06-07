@@ -7,6 +7,10 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 STATUS_VALUES = Literal["draft", "scheduled", "active", "cancelled"]
 
+# Campos que PATCH nunca pode alterar. A verificação é feita na rota
+# (não no Pydantic) para que o erro seja retornado por campo, não como "geral".
+CAMPOS_BLOQUEADOS_PATCH = frozenset({"organizer_id", "participant_count"})
+
 
 class AcaoData(BaseModel):
     title: str = Field(..., min_length=1, max_length=200)
@@ -25,6 +29,35 @@ class AcaoData(BaseModel):
 
     @model_validator(mode="after")
     def data_nao_pode_ser_no_passado(self):
+        dt = self.event_datetime
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        if dt < datetime.now(tz=timezone.utc):
+            raise ValueError("A data do evento não pode ser no passado")
+        return self
+
+
+class AcaoPatchRequest(BaseModel):
+    """Schema para PATCH parcial. Todos os campos são opcionais.
+    organizer_id e participant_count são bloqueados na camada de rota."""
+
+    title: Optional[str] = Field(None, min_length=1, max_length=200)
+    description: Optional[str] = None
+    event_datetime: Optional[datetime] = None
+    location_name: Optional[str] = Field(None, min_length=1, max_length=200)
+    location_lat: Optional[Decimal] = None
+    location_lng: Optional[Decimal] = None
+    category_id: Optional[int] = None
+    max_participants: Optional[int] = Field(None, gt=0)
+    status: Optional[STATUS_VALUES] = None
+    cover_image_url: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+    @model_validator(mode="after")
+    def data_nao_pode_ser_no_passado(self):
+        if self.event_datetime is None:
+            return self
         dt = self.event_datetime
         if dt.tzinfo is None:
             dt = dt.replace(tzinfo=timezone.utc)
