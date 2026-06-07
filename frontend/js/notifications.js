@@ -51,6 +51,10 @@
       try {
         const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
         console.log('Service Worker registered with scope:', registration.scope);
+        
+        // Wait for service worker to be ready/active
+        await navigator.serviceWorker.ready;
+        
         return registration;
       } catch (err) {
         console.error('Service Worker registration failed:', err);
@@ -100,11 +104,27 @@
         console.log('Notification permission granted.');
 
         const swRegistration = await registerServiceWorker();
+        if (!swRegistration) {
+          console.error('Failed to register service worker.');
+          return;
+        }
 
-        const token = await messaging.getToken({
-          vapidKey: config.firebase.vapidKey,
-          serviceWorkerRegistration: swRegistration
-        });
+        // Retry mechanism for getToken as Service Worker activation might take a moment
+        let token = null;
+        let retries = 5;
+        while (retries > 0 && !token) {
+          try {
+            token = await messaging.getToken({
+              vapidKey: config.firebase.vapidKey,
+              serviceWorkerRegistration: swRegistration
+            });
+          } catch (e) {
+            console.warn(`getToken attempt failed (${retries} retries left):`, e);
+            retries--;
+            if (retries > 0) await new Promise(r => setTimeout(r, 1000));
+            else throw e;
+          }
+        }
 
         if (token) {
           await registerToken(token);
