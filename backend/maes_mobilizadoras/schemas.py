@@ -86,3 +86,8 @@ class PhoneConfirmRequest(BaseModel):
 class FCMTokenRegister(BaseModel):
     token: str
     device_type: Optional[Literal["android", "ios", "web"]] = None
+
+
+class CustomNotificationRequest(BaseModel):
+    title: str = Field(..., min_length=1, max_length=150)
+    message: str = Field(..., min_length=1, max_length=300)

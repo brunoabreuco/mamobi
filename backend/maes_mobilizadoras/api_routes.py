@@ -1,10 +1,18 @@
+from datetime import datetime, timezone
 import hashlib
 from flask import Blueprint, g, jsonify, request, current_app
 from pydantic import ValidationError
 import os
 
 from maes_mobilizadoras.limiter import limiter
-from maes_mobilizadoras.models import Event, User, db, FCMToken
+from maes_mobilizadoras.models import (
+    Event,
+    User,
+    db,
+    FCMToken,
+    EventParticipation,
+    Notification,
+)
 from maes_mobilizadoras.schemas import (
     AcaoData,
     AcaoMetadata,
@@ -13,6 +21,7 @@ from maes_mobilizadoras.schemas import (
     PhoneConfirmRequest,
     UserResponse,
     UserUpdateRequest,
+    CustomNotificationRequest,
 )
 from maes_mobilizadoras.auth import (
     decode_token,
@@ -23,6 +32,7 @@ from maes_mobilizadoras.auth import (
     verify_otp,
     verify_supabase_token,
 )
+from maes_mobilizadoras.notifications import send_to_user, FIREBASE_CONF
 
 api = Blueprint("api", __name__, url_prefix="/api")
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
@@ -88,6 +98,78 @@ def create_acao():
     )
 
     return jsonify(response_model.model_dump(mode="json")), 201
+
+
+@api.post("/acoes/<string:event_id>/notify")
+@require_auth
+@limiter.limit("10 per minute")
+def notify_event_participants(event_id):
+    req_data = request.get_json(silent=True)
+    if not req_data:
+        return jsonify({"error": "Body deve ser JSON válido"}), 400
+
+    try:
+        payload = CustomNotificationRequest(**req_data)
+    except ValidationError as e:
+        return jsonify({"errors": _pydantic_errors_to_dict(e)}), 400
+
+    event = db.session.get(Event, event_id)
+    if not event:
+        return jsonify({"error": "Evento não encontrado"}), 404
+
+    # Verify that the current user is the event's organizer
+    if event.organizer_id != g.current_user_id:
+        return jsonify(
+            {
+                "error": "Acesso negado: apenas o organizador do evento pode enviar notificações"
+            }
+        ), 403
+
+    # Fetch all participants of the event who are not cancelled
+    participations = EventParticipation.query.filter(
+        EventParticipation.event_id == event_id,
+        EventParticipation.status != "cancelled",
+    ).all()
+
+    # Create the Notification record
+    try:
+        new_notification = Notification(
+            event_id=event.id,
+            sender_id=g.current_user_id,
+            type="broadcast",
+            title=payload.title,
+            message=payload.message,
+            target_role="participante",
+            sent_at=datetime.now(timezone.utc),
+        )
+        db.session.add(new_notification)
+        db.session.commit()
+    except Exception as e:
+        current_app.logger.exception(e)
+        db.session.rollback()
+        return jsonify({"error": "Falha ao registrar notificação"}), 500
+
+    # Send push notifications using firebase messaging
+    success_count = 0
+    for participation in participations:
+        success_count += send_to_user(
+            user_id=participation.user_id,
+            title=payload.title,
+            body=payload.message,
+            data={
+                "event_id": str(event.id),
+                "notification_id": str(new_notification.id),
+            },
+        )
+
+    return jsonify(
+        {
+            "message": "Notificações enviadas com sucesso",
+            "notification_id": str(new_notification.id),
+            "recipients_count": len(participations),
+            "successful_sends": success_count,
+        }
+    ), 201
 
 
 # =============================================================================
