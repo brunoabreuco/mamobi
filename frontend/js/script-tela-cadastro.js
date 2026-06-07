@@ -2,11 +2,15 @@
 // INICIALIZAÇÃO
 // Todo o código fica dentro de uma IIFE async para permitir await no topo.
 // ============================================================
+// (async () => {
+
+// const { api_base: API_BASE } = await fetch('/api/config').then(r => r.json());
+// const REDIRECT_APOS_LOGIN = '/home.html';
+
 (async () => {
 
-const { api_base: API_BASE } = await fetch('/api/config').then(r => r.json());
+const API_BASE = 'http://localhost:5000'; // exemplo
 const REDIRECT_APOS_LOGIN = '/home.html';
-
 // ============================================================
 // GERENCIAMENTO DE TOKENS
 // ============================================================
