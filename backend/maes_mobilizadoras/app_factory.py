@@ -33,7 +33,10 @@ def create_app(test_config: dict | None = None):
     app.extensions["supabase"] = supabase
 
     from maes_mobilizadoras.api_routes import api, auth_bp
-    app.register_blueprint(api)      # /api/*
-    app.register_blueprint(auth_bp)  # /auth/*
+    from maes_mobilizadoras.admin_routes import admin_bp
+
+    app.register_blueprint(api)       # /api/*
+    app.register_blueprint(auth_bp)   # /auth/*
+    app.register_blueprint(admin_bp)  # /admin/*
 
     return app

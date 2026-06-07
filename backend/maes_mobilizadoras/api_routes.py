@@ -21,6 +21,7 @@ from maes_mobilizadoras.auth import (
     issue_tokens,
     request_otp,
     require_auth,
+    require_minimum_role,
     verify_otp,
     verify_supabase_token,
 )
@@ -59,6 +60,7 @@ def _anonymize(user: User) -> None:
 
 @api.route("/acoes", methods=["POST"])
 @limiter.limit("10 per minute")
+@require_minimum_role("organizadora")
 def create_acao():
     req_data = request.get_json(silent=True)
     if not req_data:
@@ -154,7 +156,7 @@ def get_acao(event_id):
 
 
 @api.route("/acoes/<event_id>", methods=["PATCH"])
-@require_auth
+@require_minimum_role("organizadora")
 def update_acao(event_id):
     body = request.get_json(silent=True)
     if not body:
@@ -174,6 +176,9 @@ def update_acao(event_id):
     event = db.session.get(Event, event_id)
     if event is None:
         return jsonify({"error": "Ação não encontrada"}), 404
+    
+    if g.current_user.role != "coordenadora" and event.organizer_id != g.current_user_id:
+        return jsonify({"error": "Sem permissão para editar esta ação"}), 403
 
     # exclude_unset=True garante que apenas os campos enviados na requisição
     # são aplicados; campos omitidos não sobrescrevem valores existentes.
@@ -197,13 +202,13 @@ def update_acao(event_id):
 
 
 @api.route("/acoes/<event_id>", methods=["DELETE"])
-@require_auth
+@require_minimum_role("organizadora")
 def delete_acao(event_id):
     event = db.session.get(Event, event_id)
     if event is None:
         return jsonify({"error": "Ação não encontrada"}), 404
 
-    if event.organizer_id != g.current_user_id:
+    if g.current_user.role != "coordenadora" and event.organizer_id != g.current_user_id:
         return jsonify({"error": "Sem permissão para remover esta ação"}), 403
 
     try:
