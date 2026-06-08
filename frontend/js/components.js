@@ -205,8 +205,10 @@ function controlarCadastroAvisosEventos(element) {
   adicionarMobilizadora.style.display = 'none';
   detalhesEvento.style.display = 'none';
 
+  let modalAtual = null;
 
   function abrirModal(tipo) {
+  modalAtual = tipo;
 
   container.style.display = 'flex';
 
@@ -240,6 +242,56 @@ function controlarCadastroAvisosEventos(element) {
   if (tipo === 'detalhes-evento') detalhesEvento.style.display = 'block';
 }
 
+  // para criar um novo evento (página de ações comunitárias)
+const nome_evento = element.querySelector('#nome-evento')
+const tipo_evento = element.querySelector('#tipo-evento')
+const data_evento = element.querySelector('#data')
+const horario_evento = element.querySelector('#horario')
+const local_evento = element.querySelector('#local-evento')
+const descricao_evento = element.querySelector('#descricao-novo-evento')
+
+// para criar novo aviso (página de perfil)
+const evento_escolhido = element.querySelector('#tipo-evento-ja-existente')
+const mensagem_aviso_novo = element.querySelector('#descricao-novo-aviso')
+
+// para adicionar mobilizadora (página de perfil)
+const telefone_mobilizadora = element.querySelector('#telefone-mobilizadora')
+
+
+// vamos usar o botaoFooter, declarado no começo do documento.
+
+botaoFooter.addEventListener('click', () => {
+  
+  switch (modalAtual) {
+              case 'criar-evento':
+                  const novo_evento = {
+                    nome_evento_value: nome_evento.value,
+                    tipo_evento_value: tipo_evento.value,
+                    data_evento_value: data_evento.value,
+                    horario_evento_value: horario_evento.value,
+                    local_evento_value: local_evento.value,
+                    descricao_evento_value: descricao_evento.value
+                  }
+
+                  break;
+
+              case 'criar-aviso':
+                  const novo_aviso = {
+                    evento_escolhido_value: evento_escolhido.value,
+                    mensagem_aviso_novo_value: mensagem_aviso_novo.value
+                  }
+
+                  break;
+
+              case 'adicionar-mobilizadora':
+                  const telefone_mobilizadora_value = telefone_mobilizadora.value
+                  
+                  break;
+
+              default:
+                  break;
+  }
+})
 
   function fecharModal() {
     container.style.display = 'none';
@@ -301,3 +353,5 @@ document.addEventListener('click', (e) => {
 });
 
 }
+
+

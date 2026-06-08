@@ -9,7 +9,6 @@ body {
     background-color: transparent;
 }
 #container-principal {
-
     position: fixed;
     top: 0;
     left: 0;
@@ -24,6 +23,7 @@ body {
     display: none;
 }
 #modal {
+    border-radius: 35px 35px 0 0;
     position: absolute;
     bottom: 0;
     left: 0;
