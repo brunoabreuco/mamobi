@@ -7,6 +7,10 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 STATUS_VALUES = Literal["draft", "scheduled", "active", "cancelled"]
 
+ROLE_VALUES = Literal["participante", "organizadora", "coordenadora"]
+
+CAMPOS_BLOQUEADOS_PATCH = frozenset({"organizer_id", "participant_count"})
+
 
 class AcaoData(BaseModel):
     title: str = Field(..., min_length=1, max_length=200)
@@ -33,6 +37,32 @@ class AcaoData(BaseModel):
         return self
 
 
+class AcaoPatchRequest(BaseModel):
+    title: Optional[str] = Field(None, min_length=1, max_length=200)
+    description: Optional[str] = None
+    event_datetime: Optional[datetime] = None
+    location_name: Optional[str] = Field(None, min_length=1, max_length=200)
+    location_lat: Optional[Decimal] = None
+    location_lng: Optional[Decimal] = None
+    category_id: Optional[int] = None
+    max_participants: Optional[int] = Field(None, gt=0)
+    status: Optional[STATUS_VALUES] = None
+    cover_image_url: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+    @model_validator(mode="after")
+    def data_nao_pode_ser_no_passado(self):
+        if self.event_datetime is None:
+            return self
+        dt = self.event_datetime
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        if dt < datetime.now(tz=timezone.utc):
+            raise ValueError("A data do evento não pode ser no passado")
+        return self
+
+
 class AcaoMetadata(BaseModel):
     id: str
     participant_count: int
@@ -47,6 +77,7 @@ class AcaoResponse(BaseModel):
     metadata: AcaoMetadata
 
     model_config = ConfigDict(from_attributes=True)
+
 
 CAMPOS_IMUTAVEIS = {"role", "id"}
 
@@ -117,3 +148,21 @@ class UserUpdateRequest(BaseModel):
 
 class PhoneConfirmRequest(BaseModel):
     token: str = Field(..., min_length=6, max_length=6, pattern=r"^\d{6}$")
+
+
+class RoleUpdateRequest(BaseModel):
+    """Body do PATCH /admin/users/:id/role."""
+    role: ROLE_VALUES
+
+
+class UserAdminResponse(BaseModel):
+    """Perfil retornado na listagem e alteração administrativa."""
+    id: str
+    full_name: str
+    phone: str
+    neighborhood: Optional[str] = None
+    role: str
+    is_active: bool
+    avatar_url: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)

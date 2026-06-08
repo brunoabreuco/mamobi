@@ -19,3 +19,6 @@ dependencies = [
 
 [tool.setuptools.packages.find]
 include = ["maes_mobilizadoras*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]

@@ -303,3 +303,33 @@ def verify_otp(phone: str, code: str) -> User:
         return existing
 
     return get_or_create_profile(str(uuid.uuid4()), phone=phone)
+
+# =============================================================================
+# Hierarquia de permissões
+# =============================================================================
+
+_ROLE_LEVELS = {
+    "participante": 1,
+    "organizadora": 2,
+    "coordenadora": 3,
+}
+
+def require_minimum_role(min_role: str):
+    """
+    Decorator: exige que o usuário tenha role >= min_role na hierarquia.
+    Retorna 401 se não autenticado, 403 se nível insuficiente.
+    """
+    def decorator(f):
+        @wraps(f)
+        def decorated(*args, **kwargs):
+            try:
+                _load_user_from_request()
+            except ValueError as exc:
+                return jsonify({"error": str(exc)}), 401
+            user_level = _ROLE_LEVELS.get(g.current_user.role, 0)
+            required_level = _ROLE_LEVELS.get(min_role, 0)
+            if user_level < required_level:
+                return jsonify({"error": "forbidden"}), 403
+            return f(*args, **kwargs)
+        return decorated
+    return decorator

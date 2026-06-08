@@ -44,6 +44,18 @@ class User(db.Model):
     fcm_tokens = db.relationship("FCMToken", backref="user", lazy=True)
     sync_queue_items = db.relationship("SyncQueue", backref="user", lazy=True)
     notification_reads = db.relationship("NotificationRead", backref="user", lazy=True)
+    role_changes_received = db.relationship(
+        "RoleChange",
+        foreign_keys="RoleChange.user_id",
+        backref="target_user",
+        lazy=True,
+    )
+    role_changes_made = db.relationship(
+        "RoleChange",
+        foreign_keys="RoleChange.changed_by",
+        backref="actor",
+        lazy=True,
+    )
 
 
 class AuthOTP(db.Model):
@@ -155,7 +167,21 @@ class FCMToken(db.Model):
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
 
-# Automatically update participant_count in Event table
+class RoleChange(db.Model):
+    """Auditoria imutável de alterações de role."""
+    __tablename__ = "role_changes"
+    id = Column(String(36), primary_key=True, default=generate_uuid)
+    user_id = Column(String(36), ForeignKey("users.id"), nullable=False)
+    changed_by = Column(String(36), ForeignKey("users.id"), nullable=False)
+    old_role = Column(String(20), nullable=False)
+    new_role = Column(String(20), nullable=False)
+    changed_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+
+# ---------------------------------------------------------------------------
+# Triggers de participant_count
+# ---------------------------------------------------------------------------
+
 @event.listens_for(EventParticipation, "after_insert")
 def increment_participant_count(mapper, connection, target):
     table = Event.__table__
@@ -186,7 +212,6 @@ def update_participant_count(mapper, connection, target):
 
         old_event_id = history.deleted[0] if history.deleted else None
 
-        # If the old value isn't loaded in the session, query it from the DB
         if not old_event_id:
             part_table = EventParticipation.__table__
             row = connection.execute(
