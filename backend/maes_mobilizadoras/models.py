@@ -175,6 +175,8 @@ class RoleChange(db.Model):
     new_role = Column(String(20), nullable=False)
     changed_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
+""" 
+O trigger PostgreSQL já filtra por status = 'confirmed' corretamente, é suficiente e é a camada certa para manter essa invariante.
 
 # ---------------------------------------------------------------------------
 # Triggers de participant_count
@@ -232,3 +234,4 @@ def update_participant_count(mapper, connection, target):
                 .where(table.c.id == new_event_id)
                 .values(participant_count=table.c.participant_count + 1)
             )
+"""

@@ -1,5 +1,8 @@
 -- Migration: indices para filtros de busca de acoes
--- Prerequisito: extensao pg_trgm (ja criada na migration de extensions)
+
+-- pg_trgm necessario para os operadores gin_trgm_ops usados abaixo.
+-- IF NOT EXISTS garante idempotencia caso ja esteja instalada.
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
 -- Indice trigram para busca textual ILIKE em title e description
 -- pg_trgm permite que ILIKE '%termo%' use indice ao inves de seq scan
