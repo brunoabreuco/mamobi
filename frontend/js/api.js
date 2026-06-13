@@ -76,9 +76,14 @@ async function apiDelete(path, query_params) {
   return apiRequest('DELETE', path, undefined, query_params);
 }
 
-function formatToLocalDate(isoString, locale = undefined) {
+function dateTimeParseUTC(isoString) {
   const utcString = isoString.endsWith('Z') ? isoString : `${isoString}Z`;
   const date = new Date(utcString);
+  return date;
+}
+
+function formatToLocalDate(isoString, locale = undefined) {
+  const date = dateTimeParseUTC(isoString);
   return new Intl.DateTimeFormat(locale, {
     day: 'numeric',
     month: 'short',
@@ -87,8 +92,7 @@ function formatToLocalDate(isoString, locale = undefined) {
 }
 
 function formatToLocalDateTime(isoString, locale = undefined) {
-  const utcString = isoString.endsWith('Z') ? isoString : `${isoString}Z`;
-  const date = new Date(utcString);
+  const date = dateTimeParseUTC(isoString);
   return new Intl.DateTimeFormat(locale, {
     day: 'numeric',
     month: 'long',

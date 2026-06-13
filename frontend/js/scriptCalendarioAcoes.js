@@ -69,7 +69,7 @@ async function iniciarCalendario() {
 
       let isAnEvent = false;
       for (let evt of eventos) {
-        if (evt.event_datetime && new Date(evt.event_datetime).toDateString() === date.toDateString()) {
+        if (evt.event_datetime && dateTimeParseUTC(evt.event_datetime).toDateString() === date.toDateString()) {
           isAnEvent = true;
           break;
         }
