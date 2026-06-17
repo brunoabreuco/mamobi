@@ -25,10 +25,6 @@ def create_app(test_config: dict | None = None):
     )
     app.config["DEBUG"] = debug_mode
 
-    app = Flask(
-        __name__, static_folder=str(BASE_DIR.parent / "frontend"), static_url_path=""
-    )
-
     instance_path = Path(app.instance_path)
     instance_path.mkdir(exist_ok=True)
     db_path = instance_path / "app.db"
