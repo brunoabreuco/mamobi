@@ -27,7 +27,7 @@ async function renderizarEventos(eventos) {
   });
 
   for (let evento of eventos) {
-    const date = new Date(evento.event_datetime);
+    const date = dateTimeParseUTC(evento.event_datetime);
     const el = await make('componenteEventoDetalhado', {
       mes: mesFmt.format(date).toUpperCase(),
       dia: diaFmt.format(date),

@@ -105,7 +105,7 @@ async function controlarCadastroAvisosEventos(element) {
           hour: 'numeric',
           minute: '2-digit'
         });
-        const eData = new Date(evt.event_datetime);
+        const eData = dateTimeParseUTC(evt.event_datetime);
         if (evt.is_participating) {
           botaoFooter.innerText = 'Cancelar Participação';
         } else {
