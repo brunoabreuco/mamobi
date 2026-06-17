@@ -43,12 +43,9 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 17px 30px 0px 22px;
+    padding: 17px 30px 20px 22px;
+    border-bottom: 1px solid #888888;
     background-color: var(--background-primary-color);
-}
-.c-componenteCadastroAvisosEventos .header + hr {
-    position: sticky;
-    top: 58px;
     z-index: 10;
 }
 .c-componenteCadastroAvisosEventos h2 {
@@ -142,6 +139,7 @@
 .c-componenteCadastroAvisosEventos fieldset {
     border: none;
     padding: 22px 14px 11px 14px;
+    margin-bottom: 80px;
 }
 .c-componenteCadastroAvisosEventos label {
     color: var(--text-details-gray);
@@ -151,19 +149,15 @@
 .c-componenteCadastroAvisosEventos .input-com-icone {
     position: relative;
 }
-.c-componenteCadastroAvisosEventos fieldset button {
-    position: absolute;
-    top: 47%;
-    right: 13px;
-    transform: translateY(-50%);
-
-    background-color: transparent;
-    border: none;
+.c-componenteCadastroAvisosEventos .input-com-icone:has(.c-componenteBotaoVoz) {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
-.c-componenteCadastroAvisosEventos fieldset img {
-    width: 24px;
-    height: 24px;
-    vertical-align: middle;
+.c-componenteCadastroAvisosEventos .input-com-icone .c-componenteBotaoVoz {
+    position: absolute;
+    right: 14px;
+    top: 24px;
 }
 .c-componenteCadastroAvisosEventos input, select {
     width: 100%;

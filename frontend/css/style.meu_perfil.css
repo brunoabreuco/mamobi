@@ -121,3 +121,16 @@ a {
 #texto_sair {
     color: #D35746;
 }
+.titulo-aviso {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.input-com-icone {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+#tipo-evento-ja-existente {
+  margin: 9px 0 16px 0;
+}

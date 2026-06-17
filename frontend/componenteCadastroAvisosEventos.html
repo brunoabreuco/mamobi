@@ -6,8 +6,6 @@
                 <button><img src="./images/close_X.svg"></button>
             </div>
         </div>
-        <hr>
-        
 
         <div id="detalhes-do-evento" class="func_detalhes-do-evento">
             
@@ -107,19 +105,21 @@
                 <label for="selecionar-evento">Selecione o Evento</label><br>
                 <select id="tipo-evento-ja-existente" name="selecionar-evento" required>
                 </select>
-                <br>
 
                 <div class="titulo-aviso">
-                <label for="titulo-aviso">Título do Aviso</label><br>
+                  <label for="titulo-aviso">Título do Aviso</label>
+                  <div class="input-com-icone">
                     <input type="text" id="titulo-novo-aviso" placeholder="Lembrete"/>
                     <div data-spec="componenteBotaoVoz" data-prop-target="titulo-novo-aviso"></div>
                   </div>
                 </div>
 
-                <label for="msg-aviso">Corpo do Aviso</label><br>
+                <label for="msg-aviso">Corpo do Aviso</label>
                 <div class="msg-aviso">
+                  <div class="input-com-icone">
                     <textarea id="descricao-novo-aviso" placeholder="Ex: Lembrete importante! Não esqueça de trazer seus materiais..." cols="100" rows="6"></textarea>
                     <div data-spec="componenteBotaoVoz" data-prop-target="descricao-novo-aviso"></div>
+                  </div>
                 </div>
             </fieldset>
         </div>
