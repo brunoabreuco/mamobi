@@ -48,20 +48,22 @@ div:has(> .c-componenteBotaoVoz) {
 
 /* Pulsing effect when listening, pulsing the icon itself */
 .c-componenteBotaoVoz .record-btn.listening {
-    color: #00636a;
     animation: pulse-icon 1.5s infinite ease-in-out;
 }
 
 @keyframes pulse-icon {
     0% {
+        color: #00636a;
         transform: scale(1);
         opacity: 1;
     }
     50% {
+        color: #0072b7;
         transform: scale(1.2);
         opacity: 0.5;
     }
     100% {
+        color: #00636a;
         transform: scale(1);
         opacity: 1;
     }
