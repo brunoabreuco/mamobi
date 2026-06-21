@@ -23,12 +23,13 @@ async function controlarCadastroAvisosEventos(element) {
   const criarAviso = element.querySelector('#criar-aviso');
   const adicionarMobilizadora = element.querySelector('#adicionar-mobilizadora');
   const detalhesEvento = element.querySelector('#detalhes-do-evento');
-  const detalhesAviso = element.querySelector('#detalhes-aviso'); // 🆕
+  const detalhesAviso = element.querySelector('#detalhes-aviso');
 
   const botaoFechar = element.querySelector('#header-botoes button:last-child');
   const tituloModal = element.querySelector('.header h2');
   const botaoAviso = element.querySelector('#botao-aviso');
   const botaoFooter = element.querySelector('#confirmar-presenca');
+  const hrFooter = document.getElementById('hr-footer');
 
   // começa tudo fechado
   container.style.display = 'none';
@@ -37,7 +38,7 @@ async function controlarCadastroAvisosEventos(element) {
   criarAviso.style.display = 'none';
   adicionarMobilizadora.style.display = 'none';
   detalhesEvento.style.display = 'none';
-  if (detalhesAviso) detalhesAviso.style.display = 'none'; // 🆕
+  if (detalhesAviso) detalhesAviso.style.display = 'none';
 
   window.MEModal = {
     tipo: null,
@@ -79,10 +80,11 @@ async function controlarCadastroAvisosEventos(element) {
         botaoFooter.innerText = 'Adicionar Mobilizadora';
         botaoFooter.style.display = 'block';
       } else if (tipo === 'detalhes-aviso') {
-        botaoFooter.style.display = 'none'; // esconde o botão
+        botaoFooter.style.display = 'none';
+        if (hrFooter) hrFooter.style.display = 'none';
       } else if (tipo === 'detalhes-evento') {
         botaoFooter.style.display = 'block';
-        // o texto será definido abaixo
+        if (hrFooter) hrFooter.style.display = 'block';
       }
     }
 
@@ -109,12 +111,13 @@ async function controlarCadastroAvisosEventos(element) {
     if (tipo === 'detalhes-evento') {
       try {
         const evt = window.MEModal.evento;
-        const dataFmt = new Intl.DateTimeFormat(undefined, {
+        // 🔹 FORÇA LOCALE PT-BR
+        const dataFmt = new Intl.DateTimeFormat('pt-BR', {
           day: 'numeric',
           month: 'long',
           year: 'numeric',
         });
-        const horaFmt = new Intl.DateTimeFormat(undefined, {
+        const horaFmt = new Intl.DateTimeFormat('pt-BR', {
           hour: 'numeric',
           minute: '2-digit'
         });
@@ -140,7 +143,6 @@ async function controlarCadastroAvisosEventos(element) {
       }
     }
 
-    // Preencher detalhes do aviso
     if (tipo === 'detalhes-aviso' && detalhesAviso) {
       try {
         const aviso = window.MEModal.evento;
@@ -148,7 +150,7 @@ async function controlarCadastroAvisosEventos(element) {
         document.getElementById("det-aviso-mensagem").innerText = aviso.mensagem || '';
         const dataFormatada = aviso.quando || (aviso.sent_at ? formatToLocalDate(aviso.sent_at) : '');
         document.getElementById("det-aviso-data").innerText = dataFormatada || 'Data não disponível';
-        document.getElementById("det-aviso-remetente").innerText = 'Administração'; // ou algo dinâmico se tiver
+        document.getElementById("det-aviso-remetente").innerText = 'Administração';
       } catch (error) {
         console.log(error);
         mostrar_msg_erro('Não foi possível carregar detalhes do aviso', '' + error);
@@ -157,7 +159,7 @@ async function controlarCadastroAvisosEventos(element) {
     }
   }
 
-  // para criar um novo evento
+  // para criar um novo evento (página de ações comunitárias)
   const nome_evento = element.querySelector('#nome-evento');
   const tipo_evento = element.querySelector('#tipo-evento');
   const data_evento = element.querySelector('#data');
@@ -165,12 +167,12 @@ async function controlarCadastroAvisosEventos(element) {
   const local_evento = element.querySelector('#local-evento');
   const descricao_evento = element.querySelector('#descricao-novo-evento');
 
-  // para criar novo aviso
+  // para criar novo aviso (página de perfil)
   const evento_escolhido = element.querySelector('#tipo-evento-ja-existente');
   const titulo_aviso_novo = element.querySelector('#titulo-novo-aviso');
   const mensagem_aviso_novo = element.querySelector('#descricao-novo-aviso');
 
-  // para adicionar mobilizadora
+  // para adicionar mobilizadora (página de perfil)
   const telefone_mobilizadora = element.querySelector('#telefone-mobilizadora');
 
   tipo_evento.innerHTML = '';
@@ -240,6 +242,7 @@ async function controlarCadastroAvisosEventos(element) {
     adicionarMobilizadora.style.display = 'none';
     detalhesEvento.style.display = 'none';
     if (detalhesAviso) detalhesAviso.style.display = 'none';
+    if (hrFooter) hrFooter.style.display = 'block';
 
     document.body.style.overflow = 'auto';
     window.MEModal.tipo = null;

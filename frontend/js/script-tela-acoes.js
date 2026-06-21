@@ -19,10 +19,11 @@ async function renderizarEventos(eventos) {
 
   mount.innerHTML = '';
 
-  const mesFmt = new Intl.DateTimeFormat(undefined, {
+  // FORÇA LOCALE PT-BR para o mês e dia (curtos)
+  const mesFmt = new Intl.DateTimeFormat('pt-BR', {
     month: 'short',
   });
-  const diaFmt = new Intl.DateTimeFormat(undefined, {
+  const diaFmt = new Intl.DateTimeFormat('pt-BR', {
     day: 'numeric',
   });
 
@@ -33,6 +34,7 @@ async function renderizarEventos(eventos) {
       dia: diaFmt.format(date),
       titulo: evento.title,
       tipo: evento.category_name || '',
+      // 🔹 Agora usa formatToLocalDateTime para exibir data/hora completa em pt-BR
       hora: formatToLocalDateTime(evento.event_datetime),
       local: evento.location_name,
       confirmados: "" + evento.participant_count,
@@ -74,11 +76,6 @@ async function configurarElementos() {
 }
 
 // 4. INICIALIZAÇÃO DA PÁGINA
-// CORREÇÃO: as chamadas foram movidas para o evento 'componentsReady' disparado por
-// components.js após todos os componentes (header, footer) estarem no DOM.
-// Antes eram chamadas imediatamente, causando dois problemas:
-//   - barraPesquisa retornava null porque #input-pesquisa só existe após o header carregar.
-//   - carregarEventos disparava antes da página estar pronta para renderizar.
 document.addEventListener('componentsReady', () => {
   carregarEventos();
   configurarElementos();

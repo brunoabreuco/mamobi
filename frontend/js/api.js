@@ -82,25 +82,29 @@ function dateTimeParseUTC(isoString) {
   return date;
 }
 
-function formatToLocalDate(isoString, locale = undefined) {
+// Função única para formatar data/hora completa em pt-BR (24h)
+function formatToLocalDateTime(isoString) {
   const date = dateTimeParseUTC(isoString);
-  return new Intl.DateTimeFormat(locale, {
+  return new Intl.DateTimeFormat('pt-BR', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: false,
+  }).format(date);
+}
+
+// Função para formatar apenas a data (curta) em pt-BR
+function formatToLocalDate(isoString) {
+  const date = dateTimeParseUTC(isoString);
+  return new Intl.DateTimeFormat('pt-BR', {
     day: 'numeric',
     month: 'short',
     year: 'numeric'
   }).format(date);
 }
 
-function formatToLocalDateTime(isoString, locale = undefined) {
-  const date = dateTimeParseUTC(isoString);
-  return new Intl.DateTimeFormat(locale, {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit'
-  }).format(date);
-}
 // ============================================================
 // UTILITÁRIOS DE UI
 // ============================================================
