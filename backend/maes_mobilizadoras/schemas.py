@@ -66,7 +66,7 @@ class AcaoPatchRequest(BaseModel):
 
 class AcaoMetadata(BaseModel):
     id: str | UUID
-    participant_count: int = Field(default=0)  # CORREÇÃO: default=0 evita ValidationError quando o banco retorna NULL (registros criados antes do DEFAULT estar garantido)
+    participant_count: int = Field(default=0)
     created_at: datetime
     updated_at: datetime
 
@@ -84,9 +84,6 @@ CAMPOS_IMUTAVEIS = {"role", "id"}
 
 
 class AcaoListItem(BaseModel):
-    """Representacao de um evento na listagem. Inclui dados de categoria e organizador
-    para que o frontend nao precise de chamadas adicionais."""
-
     id: str
     title: str
     description: Optional[str] = None
@@ -97,7 +94,7 @@ class AcaoListItem(BaseModel):
     organizer_id: str
     organizer_name: Optional[str] = None
     status: str
-    participant_count: int = Field(default=0)  # CORREÇÃO: default=0 evita ValidationError quando o banco retorna NULL (registros criados antes do DEFAULT estar garantido)
+    participant_count: int = Field(default=0)
     cover_image_url: Optional[str] = None
     is_participating: bool = False
 
@@ -105,8 +102,6 @@ class AcaoListItem(BaseModel):
 
 
 class ActiveFilters(BaseModel):
-    """Filtros ativos retornados no response para o frontend reconstruir a URL."""
-
     q: Optional[str] = None
     categoria: Optional[int] = None
     de: Optional[str] = None
@@ -139,7 +134,8 @@ class CategoryListResponse(BaseModel):
 
 class UserResponse(BaseModel):
     id: str | UUID
-    phone: str
+    phone: Optional[str] = None   # nullable: usuários Google completam depois
+    email: Optional[str] = None   # nullable: usuários OTP completam depois
     full_name: str
     neighborhood: Optional[str] = None
     role: str
@@ -154,6 +150,7 @@ class UserUpdateRequest(BaseModel):
     full_name: Optional[str] = Field(None, min_length=1, max_length=150)
     avatar_url: Optional[str] = Field(None, max_length=500)
     phone: Optional[str] = Field(None, min_length=8, max_length=20)
+    email: Optional[str] = Field(None, max_length=254)
     neighborhood: Optional[str] = Field(None, min_length=1, max_length=100)
 
     @model_validator(mode="before")
@@ -198,17 +195,14 @@ class NotificationListResponse(BaseModel):
 
 
 class RoleUpdateRequest(BaseModel):
-    """Body do PATCH /admin/users/:id/role."""
-
     role: ROLE_VALUES
 
 
 class UserAdminResponse(BaseModel):
-    """Perfil retornado na listagem e alteração administrativa."""
-
     id: str
     full_name: str
-    phone: str
+    phone: Optional[str] = None   # nullable: usuários Google completam depois
+    email: Optional[str] = None   # nullable: usuários OTP completam depois
     neighborhood: Optional[str] = None
     role: str
     is_active: bool

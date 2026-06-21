@@ -75,6 +75,7 @@ button {
 
     font-size: 16px;
     font-weight: 600;
+    cursor: pointer;
 }
 button:disabled {
     background-color: var(--button-no-clickable);

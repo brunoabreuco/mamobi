@@ -7,6 +7,8 @@ from datetime import datetime, timedelta, timezone
 from functools import wraps
 from typing import TYPE_CHECKING
 
+import json
+import urllib.request
 import jwt as pyjwt
 from flask import g, jsonify, request
 from supabase import Client, create_client
@@ -125,19 +127,63 @@ def decode_token(token: str, expected_type: str = "access") -> dict:
     return payload
 
 
+# Cache de JWKS para não buscar a cada login
+_jwks_cache: dict | None = None
+
+
+def _get_supabase_public_key(kid: str):
+    """
+    Busca a chave pública do Supabase via JWKS e a retorna pronta para PyJWT.
+    O resultado é cacheado em memória (as chaves rodam raramente).
+    """
+    global _jwks_cache
+    if _jwks_cache is None:
+        jwks_url = os.environ["SUPABASE_URL"] + "/auth/v1/.well-known/jwks.json"
+        with urllib.request.urlopen(jwks_url, timeout=5) as resp:
+            _jwks_cache = json.loads(resp.read())
+
+    for jwk in _jwks_cache.get("keys", []):
+        if jwk.get("kid") == kid:
+            return pyjwt.algorithms.ECAlgorithm.from_jwk(json.dumps(jwk))
+
+    # kid não encontrado — pode ter rotacionado; invalida cache e tenta uma vez
+    _jwks_cache = None
+    raise ValueError("invalid_token")
+
+
 def verify_supabase_token(supabase_token: str) -> dict:
     """
-    Valida JWT emitido pelo Supabase Auth (Google OAuth).
-    Usado no endpoint de exchange.
+    Valida JWT emitido pelo Supabase Auth (Google OAuth) usando JWKS.
+    Suporta ES256 (chave assimétrica), que é o padrão em projetos Supabase recentes.
     """
-    secret = os.environ["SUPABASE_JWT_SECRET"]
     try:
-        return pyjwt.decode(
-            supabase_token,
-            secret,
-            algorithms=[_ALGORITHM],
-            audience="authenticated",
-        )
+        header = pyjwt.get_unverified_header(supabase_token)
+    except pyjwt.InvalidTokenError:
+        raise ValueError("invalid_token")
+
+    alg = header.get("alg", "")
+    kid = header.get("kid")
+
+    try:
+        if alg == "ES256" and kid:
+            key = _get_supabase_public_key(kid)
+            return pyjwt.decode(
+                supabase_token,
+                key,
+                algorithms=["ES256"],
+                audience="authenticated",
+                leeway=timedelta(minutes=10),
+            )
+        else:
+            # Fallback para projetos antigos que ainda usam HS256
+            secret = os.environ["SUPABASE_JWT_SECRET"]
+            return pyjwt.decode(
+                supabase_token,
+                secret,
+                algorithms=["HS256"],
+                audience="authenticated",
+                leeway=timedelta(minutes=10),
+            )
     except pyjwt.ExpiredSignatureError:
         raise ValueError("token_expired")
     except pyjwt.InvalidTokenError:
@@ -216,6 +262,7 @@ def get_or_create_profile(
     user_id: str,
     *,
     phone: str | None = None,
+    email: str | None = None,
     full_name: str | None = None,
     neighborhood: str = "",
 ) -> User:
@@ -228,6 +275,7 @@ def get_or_create_profile(
         user = User(
             id=user_id,
             phone=phone,
+            email=email,
             full_name=full_name or "",
             neighborhood=neighborhood,
             role=_DEFAULT_ROLE,
@@ -363,4 +411,3 @@ def require_minimum_role(min_role: str):
         return decorated
 
     return decorator
-

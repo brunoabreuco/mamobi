@@ -2,6 +2,7 @@ import uuid
 from datetime import datetime, timezone
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import (
+    CheckConstraint,
     Column,
     Integer,
     String,
@@ -23,11 +24,21 @@ def generate_uuid():
 
 class User(db.Model):
     __tablename__ = "users"
+    __table_args__ = (
+        # Garante que todo usuário tenha ao menos uma identidade.
+        # Usuários OTP têm phone; usuários Google têm email.
+        CheckConstraint(
+            "phone IS NOT NULL OR email IS NOT NULL",
+            name="users_has_identity",
+        ),
+    )
+
     id = Column(String(36), primary_key=True, default=generate_uuid)
-    phone = Column(String(20), unique=True, nullable=False)
+    phone = Column(String(20), unique=True, nullable=True)   # nullable: Google users não têm telefone
+    email = Column(String(254), unique=True, nullable=True)  # nullable: OTP users podem não ter e-mail
     pending_phone = Column(String(20), nullable=True)
     full_name = Column(String(150), nullable=False)
-    neighborhood = Column(String(100), nullable=False)
+    neighborhood = Column(String(100), nullable=True)
     role = Column(String(20), nullable=False)
     avatar_url = Column(Text, nullable=True)
     is_active = Column(Boolean, default=True)
@@ -175,7 +186,8 @@ class RoleChange(db.Model):
     new_role = Column(String(20), nullable=False)
     changed_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
-""" 
+
+"""
 O trigger PostgreSQL já filtra por status = 'confirmed' corretamente, é suficiente e é a camada certa para manter essa invariante.
 
 # ---------------------------------------------------------------------------

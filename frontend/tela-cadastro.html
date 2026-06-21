@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- CSS global (variáveis) + CSS específico do cadastro (sem usar style.css) -->
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/style-tela-cadastro.css">
 
@@ -19,6 +18,43 @@
             margin-top: 0.5rem;
             min-height: 1.2em;
         }
+        .divisor-ou {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            width: 350px;
+            margin: 0 auto 30px auto;
+            font-size: 13px;
+        }
+        .divisor-ou::before,
+        .divisor-ou::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.35);
+        }
+        .botao-google {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        .botao-google-icon {
+            background-color: #ffffff;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .botao-google-icon svg {
+            background-color: transparent;
+            display: block;
+        }
+        .campo-extra { display: none; }
     </style>
 
     <title>Mães Mobilizadoras</title>
@@ -31,11 +67,26 @@
 
         <div class="conteiner-default">
             <label for="phone">Número de celular</label><br>
-            <input class="input-default" type="tel" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}" placeholder="(11) 98765-4321" required> 
+            <input class="input-default" type="tel" id="phone" name="phone" placeholder="(11) 98765-4321" required>
         </div>
 
-        <button>Continuar</button>
+        <button id="btn-continuar">Continuar</button>
         <p class="msg-erro" id="erro-telefone"></p>
+
+        <div class="divisor-ou"><span>ou</span></div>
+
+        <button class="botao-google" id="btn-google" type="button">
+            <span class="botao-google-icon">
+                <svg width="16" height="16" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
+                    <path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/>
+                    <path d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.548 0 9s.348 2.825.957 4.039l3.007-2.332z" fill="#FBBC05"/>
+                    <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 6.293C4.672 4.166 6.656 3.58 9 3.58z" fill="#EA4335"/>
+                </svg>
+            </span>
+            Entrar com Google
+        </button>
+        <p class="msg-erro" id="erro-google"></p>
 
         <p>Ao continuar, você receberá um código de verificação <br> por SMS</p>
     </section>
@@ -68,6 +119,19 @@
             <input class="input-com-descricao" id="name" type="text" name="name" placeholder="Digite seu nome completo" required>
             <p class="p-descricao-nome">Use seu nome real para que outras pessoas te reconheçam</p>
         </div>
+
+        <!-- Mostrado apenas para usuários Google (não têm telefone ainda) -->
+        <div class="conteiner-default campo-extra" id="campo-telefone-extra">
+            <label for="phone-extra">Número de celular *</label><br>
+            <input class="input-default" type="tel" id="phone-extra" name="phone-extra" placeholder="(11) 98765-4321">
+        </div>
+
+        <!-- Mostrado apenas para usuários OTP (não têm e-mail ainda) -->
+        <div class="conteiner-default campo-extra" id="campo-email-extra">
+            <label for="email-extra">E-mail *</label><br>
+            <input class="input-default" type="email" id="email-extra" name="email-extra" placeholder="seu@email.com">
+        </div>
+
         <div class="conteiner-com-icone">
             <label for="neighborhood">Em qual bairro você mora? *</label>
             <img class="icon-location" src="images/icone-localizacao-cinza.png">
@@ -85,6 +149,8 @@
         <p class="msg-erro" id="erro-perfil"></p>
         <p>Suas informações ajudam a fortalecer a comunidade e <br>conectar você com eventos próximos</p>
     </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/api.js"></script>
     <script src="js/components.js"></script>
     <script src="js/script-tela-cadastro.js"></script>

@@ -404,15 +404,23 @@ def update_me():
         user.avatar_url = payload.avatar_url
 
     if payload.phone is not None and payload.phone != user.phone:
-        try:
-            supabase = current_app.extensions["supabase"]
-            supabase.auth.sign_in_with_otp({"phone": payload.phone})
-        except Exception as e:
-            current_app.logger.exception(e)
-            return jsonify({"error": "Falha ao enviar OTP para o novo telefone"}), 502
+        # Se o usuário NÃO possui telefone e POSSUI email (usuário Google),
+        # salva o telefone diretamente, sem OTP (primeiro cadastro).
+        if user.phone is None and user.email is not None:
+            user.phone = payload.phone
+            # Não define pending_phone, não envia OTP
+        else:
+            # Fluxo normal: troca de telefone (usuário já tem telefone)
+            # ou usuário OTP (sempre tem telefone) – exige confirmação via OTP
+            try:
+                supabase = current_app.extensions["supabase"]
+                supabase.auth.sign_in_with_otp({"phone": payload.phone})
+            except Exception as e:
+                current_app.logger.exception(e)
+                return jsonify({"error": "Falha ao enviar OTP para o novo telefone"}), 502
 
-        user.pending_phone = payload.phone
-        phone_change_pending = True
+            user.pending_phone = payload.phone
+            phone_change_pending = True
 
     if payload.neighborhood is not None:
         user.neighborhood = payload.neighborhood
@@ -697,10 +705,11 @@ def google_exchange():
         return jsonify({"error": str(exc)}), 401
 
     user_id = payload["sub"]
+    email = payload.get("email") or None
     meta = payload.get("user_metadata") or {}
     full_name = meta.get("full_name") or meta.get("name") or ""
 
-    user = get_or_create_profile(user_id, full_name=full_name)
+    user = get_or_create_profile(user_id, email=email, full_name=full_name)
     tokens = issue_tokens(str(user.id), user.role)
     return jsonify(
         {
@@ -886,5 +895,7 @@ def frontend_config():
         {
             "api_base": os.environ.get("API_BASE", ""),
             "firebase": FIREBASE_CONF,
+            "supabase_url": os.environ.get("SUPABASE_URL", ""),
+            "supabase_anon_key": os.environ.get("SUPABASE_ANON_KEY", ""),
         }
     )
