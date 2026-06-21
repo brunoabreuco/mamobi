@@ -1,48 +1,54 @@
 function configurarFooter() {
+    var nav = document.querySelector('.c-footer nav');
+    if (!nav) return;
 
-  const icone_inicio = document.querySelector('.c-footer .inicio');
-  const icone_calendario = document.querySelector('.c-footer .calendario');
-  const icone_avisos = document.querySelector('.c-footer .avisos');
-  const icone_perfil = document.querySelector('.c-footer .perfil');
+    var mapaIndice = {
+        'tela_acoes_comunitarias.html': 0,
+        'tela_calendario.html':         1,
+        'tela_avisos.html':             2,
+        'tela_meu_perfil.html':         3
+    };
 
-  const tela = window.location.pathname;
-  console.log(window.location.pathname);
+    var paginaAtual = window.location.pathname.split('/').pop();
+    var indice = mapaIndice[paginaAtual];
+    if (indice === undefined) return;
 
-  switch (tela) {
-    case '/frontend/tela_acoes_comunitarias.html':
-      icone_inicio.setAttribute('src', './images/footer-icone-inicio-active.svg')
-      icone_calendario.setAttribute('src', './images/footer-icone-calendario.svg')
-      icone_avisos.setAttribute('src', './images/footer-icone-avisos.svg')
-      icone_perfil.setAttribute('src', './images/footer-icone-perfil.svg')
+    var links = nav.querySelectorAll('a');
 
-      break;
+    links.forEach(function(link, i) {
+        link.classList.toggle('nav-active', i === indice);
+    });
 
-    case '/frontend/tela_calendario.html':
-      icone_inicio.setAttribute('src', './images/footer-icone-inicio.svg')
-      icone_calendario.setAttribute('src', './images/footer-icone-calendario-active.svg')
-      icone_avisos.setAttribute('src', './images/footer-icone-avisos.svg')
-      icone_perfil.setAttribute('src', './images/footer-icone-perfil.svg')
+    var oldPill = nav.querySelector('.nav-pill');
+    if (oldPill) oldPill.remove();
 
-      break;
+    var pill = document.createElement('div');
+    pill.className = 'nav-pill';
+    pill.setAttribute('aria-hidden', 'true');
+    nav.insertAdjacentElement('afterbegin', pill);
 
-    case '/frontend/tela_avisos.html':
-      icone_inicio.setAttribute('src', './images/footer-icone-inicio.svg')
-      icone_calendario.setAttribute('src', './images/footer-icone-calendario.svg')
-      icone_avisos.setAttribute('src', './images/footer-icone-avisos-active.svg')
-      icone_perfil.setAttribute('src', './images/footer-icone-perfil.svg')
+    requestAnimationFrame(function() {
+        var navRect  = nav.getBoundingClientRect();
+        var linkRect = links[indice].getBoundingClientRect();
+        var xAtual   = linkRect.left - navRect.left;
+        var xAnterior = parseFloat(sessionStorage.getItem('footer-pill-x'));
 
-      break;
+        // Largura do link + 20px de folga (10px de cada lado)
+        var larguraPill = linkRect.width + 20;
+        pill.style.width = larguraPill + 'px';
+        // Ajusta a posição X para manter o pill centralizado sob o link
+        var xAjustado = xAtual - 10; // desloca 10px para a esquerda
+        pill.style.transitionDuration = '0s';
+        pill.style.transform = 'translateX(' + (isNaN(xAnterior) ? xAjustado : xAnterior) + 'px)';
 
-    case '/frontend/tela_meu_perfil.html':
-      icone_inicio.setAttribute('src', './images/footer-icone-inicio.svg')
-      icone_calendario.setAttribute('src', './images/footer-icone-calendario.svg')
-      icone_avisos.setAttribute('src', './images/footer-icone-avisos.svg')
-      icone_perfil.setAttribute('src', './images/footer-icone-perfil-active.svg')
+        void pill.offsetHeight;
 
-      break;
-
-    default:
-      break;
-
-  }
+        requestAnimationFrame(function() {
+            pill.style.transitionDuration = '';
+            pill.style.transform = 'translateX(' + xAjustado + 'px)';
+            sessionStorage.setItem('footer-pill-x', String(xAjustado));
+        });
+    });
 }
+
+document.addEventListener('DOMContentLoaded', configurarFooter);
