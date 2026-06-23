@@ -10,14 +10,13 @@
     <link rel="stylesheet" href="./css/styleComponenteCadastroAvisosEventos.css">
     <link rel="stylesheet" href="./css/styleComponenteBotaoVoz.css">
     <title>Mães Mobilizadoras</title>
-    <!-- 🔹 KEYFRAMES NO HEAD -->
     <style>
       @keyframes spin {
         to { transform: rotate(360deg); }
       }
     </style>
-  </head>
-  <body style="background-color: #f5ede9" style="position: relative">
+</head>
+<body style="background-color: #f5ede9" style="position: relative">
     <!-- TELA DE LOADING -->
     <div id="loading-screen" style="
         position: fixed;
@@ -122,6 +121,72 @@
 
     <div id="modal-container" data-spec="componenteCadastroAvisosEventos"></div>
     
+    <!-- 🔹 MODAL DE CONFIRMAÇÃO DE LOGOUT -->
+    <div id="confirmacao-logout" style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 20000;
+        backdrop-filter: blur(2px);
+        -webkit-backdrop-filter: blur(2px);
+    ">
+        <div style="
+            background-color: #F5EDE9;
+            padding: 30px 24px;
+            border-radius: 20px;
+            max-width: 340px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        ">
+            <h3 style="
+                font-family: 'Inter', sans-serif;
+                font-weight: 600;
+                font-size: 18px;
+                margin-bottom: 12px;
+                color: #1a1a1a;
+            ">Sair</h3>
+            <p style="
+                font-family: 'Inter', sans-serif;
+                font-weight: 400;
+                font-size: 15px;
+                color: #3E3F41;
+                margin-bottom: 24px;
+            ">Tem certeza que deseja sair da sua conta?</p>
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <button id="cancelar-logout" style="
+                    background-color: transparent;
+                    border: 1px solid #CFCFCF;
+                    border-radius: 12px;
+                    padding: 10px 24px;
+                    font-family: 'Inter', sans-serif;
+                    font-weight: 500;
+                    font-size: 14px;
+                    cursor: pointer;
+                    transition: background-color 0.2s;
+                ">Cancelar</button>
+                <button id="confirmar-logout" style="
+                    background-color: #D35746;
+                    border: none;
+                    border-radius: 12px;
+                    padding: 10px 24px;
+                    font-family: 'Inter', sans-serif;
+                    font-weight: 500;
+                    font-size: 14px;
+                    color: white;
+                    cursor: pointer;
+                    transition: background-color 0.2s;
+                ">Sair</button>
+            </div>
+        </div>
+    </div>
+
      <div id="footer" data-spec="footer"></div>
      
     <script src="js/api.js"></script>

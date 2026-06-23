@@ -1,21 +1,15 @@
 async function carregarPerfil() {
   try {
     const data = await apiGet('/api/me');
-    // Preenche os dados do perfil
     document.getElementById('nome').textContent = data.full_name || 'Usuário';
     document.getElementById('subtitulo').textContent = data.role || 'Participante';
     document.getElementById('numero_eventos_criou').textContent = data.created_events_count || 0;
     document.getElementById('numero_eventos_participou').textContent = data.participated_events_count || 0;
 
-    // Mostra/esconde elementos baseado no role
     const isParticipante = data.role === 'participante';
     const elementosHide = document.querySelectorAll('.participante-hide');
     for (let el of elementosHide) {
-      if (isParticipante) {
-        el.style.display = 'none';
-      } else {
-        el.style.display = 'block';
-      }
+      el.style.display = isParticipante ? 'none' : 'block';
     }
   } catch (err) {
     console.error('Erro ao carregar perfil:', err);
@@ -25,7 +19,6 @@ async function carregarPerfil() {
   }
 }
 
-// 🔹 FUNÇÃO PARA OCULTAR LOADING
 function ocultarLoading() {
   const loadingScreen = document.getElementById('loading-screen');
   if (loadingScreen) {
@@ -36,16 +29,22 @@ function ocultarLoading() {
   }
 }
 
-// 🔹 FUNÇÃO DE LOGOUT
 function logout() {
-  if (confirm('Tem certeza que deseja sair?')) {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    window.location.href = 'tela-cadastro.html';
-  }
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('refresh_token');
+  window.location.href = 'tela-cadastro.html';
 }
 
-// 🔹 CONFIGURA OS BOTÕES DA PÁGINA (COM FALLBACK)
+function abrirModalLogout() {
+  const modal = document.getElementById('confirmacao-logout');
+  if (modal) modal.style.display = 'flex';
+}
+
+function fecharModalLogout() {
+  const modal = document.getElementById('confirmacao-logout');
+  if (modal) modal.style.display = 'none';
+}
+
 function configurarBotoes() {
   // Botão "Enviar Avisos"
   const botaoAvisos = document.getElementById('botao_azul');
@@ -54,8 +53,6 @@ function configurarBotoes() {
       if (window.ccaeAbrirModal) {
         window.ccaeAbrirModal('criar-aviso', null);
       } else {
-        console.warn('Modal ainda não disponível, tentando novamente em 500ms...');
-        // Fallback: espera o modal ser carregado
         setTimeout(() => {
           if (window.ccaeAbrirModal) {
             window.ccaeAbrirModal('criar-aviso', null);
@@ -74,7 +71,6 @@ function configurarBotoes() {
       if (window.ccaeAbrirModal) {
         window.ccaeAbrirModal('adicionar-mobilizadora', null);
       } else {
-        console.warn('Modal ainda não disponível, tentando novamente em 500ms...');
         setTimeout(() => {
           if (window.ccaeAbrirModal) {
             window.ccaeAbrirModal('adicionar-mobilizadora', null);
@@ -86,17 +82,42 @@ function configurarBotoes() {
     });
   }
 
-  // Botão "Sair"
-  const botaoSair = document.getElementById('texto_sair');
-  if (botaoSair) {
-    botaoSair.addEventListener('click', function(e) {
+  // 🔹 Botão "Sair" – evento no container inteiro (.icone_descricao)
+  const containerSair = document.querySelector('.menu .icone_descricao:last-child');
+  if (containerSair) {
+    containerSair.addEventListener('click', function(e) {
+      // Impede que o link dentro do container dispare navegação
       e.preventDefault();
+      abrirModalLogout();
+    });
+  }
+
+  // Modal de logout – botão Cancelar
+  const cancelarBtn = document.getElementById('cancelar-logout');
+  if (cancelarBtn) {
+    cancelarBtn.addEventListener('click', fecharModalLogout);
+  }
+
+  // Modal de logout – botão Sair
+  const confirmarBtn = document.getElementById('confirmar-logout');
+  if (confirmarBtn) {
+    confirmarBtn.addEventListener('click', function() {
+      fecharModalLogout();
       logout();
+    });
+  }
+
+  // Fechar modal ao clicar fora da caixa
+  const modal = document.getElementById('confirmacao-logout');
+  if (modal) {
+    modal.addEventListener('click', function(e) {
+      if (e.target === this) {
+        fecharModalLogout();
+      }
     });
   }
 }
 
-// Inicialização
 document.addEventListener('componentsReady', () => {
   carregarPerfil();
   configurarBotoes();
