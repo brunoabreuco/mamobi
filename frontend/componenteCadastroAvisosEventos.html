@@ -1,15 +1,20 @@
-    <div id="container-principal">
+<div id="container-principal">
     <div id="modal">
         <div class="header">
             <h2>Detalhes do evento</h2>
             <div id="header-botoes">
-                <button><img src="./images/close_X.svg"></button>
+                <!-- Botão deletar -->
+                <button class="btn-deletar" id="deletar-evento" style="display: none;">
+                    <img src="./images/icone-lixeira.svg" alt="Deletar evento">
+                </button>
+                <button class="btn-fechar" id="fechar-modal">
+                    <img src="./images/close_X.svg" alt="Fechar">
+                </button>
             </div>
         </div>
 
+        <!-- DETALHES DO EVENTO -->
         <div id="detalhes-do-evento" class="func_detalhes-do-evento">
-            
-
             <span id="det-tipo-evento" class="func_tipo_evento"></span>
             <h1 id="det-titulo-evento"></h1>
             <span id="det-descricao-evento" class="func_descricao_evento"></span>
@@ -47,13 +52,32 @@
                     </div>
                 </div>
             </div>
-
         </div>
 
-        <div id="avisos-evento">
+        <!-- DETALHES DO AVISO -->
+        <div id="detalhes-aviso" class="func_detalhes-do-evento" style="display:none;">
+            <h1 id="det-aviso-titulo"></h1>
+            <span id="det-aviso-mensagem" class="func_descricao_evento"></span>
 
+            <div class="func_conjunto-detalhes">
+                <div class="caixa_info">
+                    <img src="./images/icone-relogio.svg">
+                    <div>
+                        <h3 class="texto_grande_preto">Enviado em</h3>
+                        <span class="texto_pequeno_cinza" id="det-aviso-data"></span>
+                    </div>
+                </div>
+                <div class="caixa_info">
+                    <img src="./images/icone-duas-pessoas.svg">
+                    <div>
+                        <h3 class="texto_grande_preto">Remetente</h3>
+                        <span class="texto_pequeno_cinza" id="det-aviso-remetente">Administração</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
+        <!-- CRIAR EVENTO -->
         <div id="criar-evento">
             <form>
                 <fieldset>
@@ -65,20 +89,20 @@
                     <br>
 
                     <label for="tipo-evento">Tipo de Evento *</label><br>
-                    <select id="tipo-evento" name="tipo-evento" required>
-                    </select>
+                    <select id="tipo-evento" name="tipo-evento" required></select>
                     <br>
 
                     <div id="data-horario">
                         <div class="input-com-icone">
                             <label for="data">Data *</label><br>
+                            <!-- 🔹 Mantém type="date" – o formato de exibição depende do navegador -->
                             <input class="input-preto" type="date" id="data" required>
                             <br>
                         </div>
-
                         <div>
-                            <label for="time">Horário *</label><br>
-                            <input class="input-preto" id="horario" type="time" required>
+                            <label for="horario">Horário *</label><br>
+                            <!-- 🔹 step="60" para evitar segundos, e pattern para garantir HH:MM -->
+                            <input class="input-preto" id="horario" type="time" step="60" value="12:00" required>
                             <br>
                         </div>
                     </div>
@@ -92,38 +116,38 @@
 
                     <label for="descricao-novo-evento">Descrição</label><br>
                     <div class="input-com-icone">
-                        <textarea id="descricao-novo-evento" name="userReview" placeholder="Descreva o evento..." cols="100" rows="6"></textarea>
+                        <textarea id="descricao-novo-evento" placeholder="Descreva o evento..." cols="100" rows="6"></textarea>
                         <div data-spec="componenteBotaoVoz" data-prop-target="descricao-novo-evento"></div>
                     </div>
-
                 </fieldset>
             </form>
         </div>
 
+        <!-- CRIAR AVISO -->
         <div id="criar-aviso">
             <fieldset>
                 <label for="selecionar-evento">Selecione o Evento</label><br>
-                <select id="tipo-evento-ja-existente" name="selecionar-evento" required>
-                </select>
+                <select id="tipo-evento-ja-existente" name="selecionar-evento" required></select>
 
                 <div class="titulo-aviso">
-                  <label for="titulo-aviso">Título do Aviso</label>
-                  <div class="input-com-icone">
-                    <input type="text" id="titulo-novo-aviso" placeholder="Lembrete"/>
-                    <div data-spec="componenteBotaoVoz" data-prop-target="titulo-novo-aviso"></div>
-                  </div>
+                    <label for="titulo-aviso">Título do Aviso</label>
+                    <div class="input-com-icone">
+                        <input type="text" id="titulo-novo-aviso" placeholder="Lembrete"/>
+                        <div data-spec="componenteBotaoVoz" data-prop-target="titulo-novo-aviso"></div>
+                    </div>
                 </div>
 
                 <label for="msg-aviso">Corpo do Aviso</label>
                 <div class="msg-aviso">
-                  <div class="input-com-icone">
-                    <textarea id="descricao-novo-aviso" placeholder="Ex: Lembrete importante! Não esqueça de trazer seus materiais..." cols="100" rows="6"></textarea>
-                    <div data-spec="componenteBotaoVoz" data-prop-target="descricao-novo-aviso"></div>
-                  </div>
+                    <div class="input-com-icone">
+                        <textarea id="descricao-novo-aviso" placeholder="Ex: Lembrete importante! Não esqueça de trazer seus materiais..." cols="100" rows="6"></textarea>
+                        <div data-spec="componenteBotaoVoz" data-prop-target="descricao-novo-aviso"></div>
+                    </div>
                 </div>
             </fieldset>
         </div>
 
+        <!-- ADICIONAR MOBILIZADORA -->
         <div id="adicionar-mobilizadora">
             <div id="caixa-vermelha">
                 <p><span>Atenção:</span> Esta pessoa receberá permissões para criar eventos e enviar avisos para a comunidade.</p>
@@ -132,13 +156,26 @@
             <div id="input-imagem">
                 <input id="telefone-mobilizadora" type="tel" placeholder="(11) 99999-9999" required>
                 <img id="icone-telefone" src="./images/icone-telefone.svg">
-            </div>            
+            </div>
             <p>Será enviado um código de verificação por SMS</p>
         </div>
 
         <hr id="hr-footer">
         <div id="footer">
             <button id="confirmar-presenca">Confirmar Presença</button>
-        </div>   
-    </div>    
+        </div>
+
     </div>
+
+    <!-- MODAL DE CONFIRMAÇÃO -->
+    <div id="confirmacao-delete" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 20; border-radius: 35px 35px 0 0;">
+        <div style="background-color: #F5EDE9; padding: 30px 24px; border-radius: 20px; max-width: 320px; width: 90%; text-align: center; box-shadow: 0 8px 30px rgba(0,0,0,0.3);">
+            <h3 style="font-family: 'Inter', sans-serif; font-weight: 600; font-size: 18px; margin-bottom: 12px; color: #1a1a1a;">Deletar evento</h3>
+            <p style="font-family: 'Inter', sans-serif; font-weight: 400; font-size: 15px; color: #3E3F41; margin-bottom: 24px;" id="confirmacao-delete-msg">Tem certeza que deseja deletar este evento? Esta ação não pode ser desfeita.</p>
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <button id="cancelar-delete" style="background-color: transparent; border: 1px solid #CFCFCF; border-radius: 12px; padding: 10px 24px; font-family: 'Inter', sans-serif; font-weight: 500; font-size: 14px; cursor: pointer; transition: background-color 0.2s;">Cancelar</button>
+                <button id="confirmar-delete" style="background-color: #D35746; border: none; border-radius: 12px; padding: 10px 24px; font-family: 'Inter', sans-serif; font-weight: 500; font-size: 14px; color: white; cursor: pointer; transition: background-color 0.2s;">Deletar</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -14,6 +14,11 @@
     margin-left: 12px;
     margin-right: 12px;
     gap: 5px;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+}
+.c-componenteproximosEventos div:hover {
+    background-color: #d5d4d4;
 }
 .c-componenteproximosEventos p.data {
     color: #0072B7;

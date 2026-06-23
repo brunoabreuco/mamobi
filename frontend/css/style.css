@@ -1,1 +1,14 @@
 @import url(global.css);
+
+/* Botão de adicionar evento */
+#btn-add-acao {
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    cursor: pointer;
+}
+#btn-add-acao:hover {
+    transform: scale(1.1);
+    opacity: 0.8;
+}
+#btn-add-acao:active {
+    transform: scale(0.95);
+}

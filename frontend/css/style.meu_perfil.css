@@ -46,7 +46,6 @@ h2 {
     display: flex;
     flex-direction: column;
     justify-content: center;
-
     padding: 19px 10px 19px 10px; 
     margin-bottom: 22px;
 }
@@ -83,11 +82,16 @@ p {
     display: flex;
     justify-content: flex-start;
     align-items: center;
-
     font-size: 16px;
     font-weight: 600;
     padding-left: 15px;
     gap: 7px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+.botao:hover {
+    transform: scale(1.02);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 #botao_vermelho {
     background-color: #F8DDDA;
@@ -105,6 +109,13 @@ p {
     align-items: center;
     gap: 7px;
     margin-bottom: 22px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+}
+.icone_descricao:hover {
+    background-color: rgba(0, 0, 0, 0.06);
 }
 .icone {
     width: 17px;

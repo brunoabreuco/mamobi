@@ -9,8 +9,8 @@
     position: fixed;
     top: 0;
     left: 0;
-
     width: 100%;
+    z-index: 10000; /* 🔹 Acima da tela de loading */
 }
 .c-header .conteudo {
     padding: 0px 21px 0px 21px;
@@ -33,35 +33,30 @@
     border-radius: 11px;
     width: 64px;
     height: 18px;
-
     color: white;
     font-size: 8px;
     font-weight: 500;
     text-align: center;
     line-height: 17.5px;
-    
 }
 .c-header .barra_pesquisa {
     position: relative;
     margin-bottom: 9px;
 }
-.c-header .barra_pesquisa  img {
+.c-header .barra_pesquisa img {
     width: 24px;
     height: 24px;
-
     position: absolute;
-
     left: 9px;
     top: 8px;
 }
-.c-header input{
+.c-header input {
     background-color: #D9D9D9;
     border-radius: 13px;
     border: none;
     width: 100%;
     height: 40px;
     padding-left: 39px;
-
     color: #0F0F09;
     font-size: 13px;
     font-weight: 400;
@@ -71,25 +66,20 @@
     justify-content: flex-start;
     padding-left: 4px;
     align-items: center;
-
     background-color: #D9D9D9;
     border-radius: 25px;
     border: none;
     margin-bottom: 6.5px;
     width: 64px;
     height: 25px;
-    
-
     color: black;
     font-size: 11px;
     font-weight: 500;
-}   
+}
 .c-header .filtros img {
     width: 16px;
     height: 16px;
 }
-
-
 .c-header hr {
     width: 100%;
     height: 1.5px;

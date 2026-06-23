@@ -228,12 +228,25 @@ def delete_acao(event_id):
         return jsonify({"error": "Sem permissão para remover esta ação"}), 403
 
     try:
+        # 🔹 1. Busca todas as notificações associadas ao evento
+        notifications = Notification.query.filter_by(event_id=event_id).all()
+        for notif in notifications:
+            # 🔹 2. Deleta os registros de leitura de cada notificação
+            NotificationRead.query.filter_by(notification_id=notif.id).delete()
+            # 🔹 3. Deleta a notificação
+            db.session.delete(notif)
+
+        # 🔹 4. Deleta as participações do evento
+        EventParticipation.query.filter_by(event_id=event_id).delete()
+
+        # 🔹 5. Deleta o evento
         db.session.delete(event)
         db.session.commit()
+
     except Exception as e:
         current_app.logger.exception(e)
         db.session.rollback()
-        return jsonify({"error": "Failed to reach database"}), 500
+        return jsonify({"error": "Falha ao deletar evento: " + str(e)}), 500
 
     return "", 204
 
@@ -790,6 +803,10 @@ def list_acoes():
 
     responsavel = request.args.get("responsavel") or None
 
+    # Parâmetro para filtrar apenas eventos em que o usuário participa
+    participating_param = request.args.get("participating", "").lower()
+    participating_only = participating_param in ("true", "1", "yes")
+
     try:
         page = max(1, int(request.args.get("page", 1)))
         per_page = min(100, max(1, int(request.args.get("per_page", 20))))
@@ -798,7 +815,6 @@ def list_acoes():
 
     # --- query ---
     from sqlalchemy.orm import joinedload
-    from maes_mobilizadoras.acoes_filter import build_event_filters
 
     filters = build_event_filters(
         q=q,
@@ -807,6 +823,29 @@ def list_acoes():
         ate=ate,
         responsavel=responsavel,
     )
+
+    # Obtém user_id do token
+    user_id = None
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        try:
+            from maes_mobilizadoras.auth import decode_token
+            token = auth_header.split(" ", 1)[1]
+            payload = decode_token(token)
+            user_id = payload.get("sub")
+        except Exception as e:
+            current_app.logger.warning(f"Falha ao decodificar token: {e}")
+
+    # Se for solicitado apenas eventos participados, exigimos autenticação
+    if participating_only:
+        if not user_id:
+            return jsonify({"error": "Autenticação necessária para filtrar eventos participados"}), 401
+        # Subconsulta para obter IDs dos eventos onde o usuário tem participação confirmada
+        subquery = db.select(EventParticipation.event_id).where(
+            EventParticipation.user_id == user_id,
+            EventParticipation.status == "confirmed"
+        ).scalar_subquery()
+        filters.append(Event.id.in_(subquery))
 
     try:
         total = db.session.execute(
@@ -834,19 +873,7 @@ def list_acoes():
         current_app.logger.exception(e)
         return jsonify({"error": "Falha ao consultar acoes"}), 500
 
-    # --- Check participation if user is logged in ---
-    user_id = None
-    auth_header = request.headers.get("Authorization")
-    if auth_header and auth_header.startswith("Bearer "):
-        try:
-            from maes_mobilizadoras.auth import decode_token
-
-            token = auth_header.split(" ", 1)[1]
-            payload = decode_token(token)
-            user_id = payload.get("sub")
-        except Exception:
-            pass
-
+    # --- Verifica participação para cada evento (já existente) ---
     participating_ids = set()
     if user_id and events:
         event_ids = [ev.id for ev in events]

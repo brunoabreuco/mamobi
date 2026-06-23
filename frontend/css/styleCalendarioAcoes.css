@@ -36,7 +36,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-
     padding: 0px 36px;
 }
 #monthYear {
@@ -68,31 +67,26 @@
     font-weight: 500; 
     line-height: 24px;
     text-align: center;
-
 }
 .dates {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 2px;
-
-    
 }
 .date {
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-
     font-size: 10px;
     font-weight: 500;
-
     border-radius: 10px;
     padding: 12px 6px;
 }
 .date:active {
     background-color: #E8E8E8;
 }
-.inactive { /* é para os dias que não pertencem ao mês atual */
+.inactive {
     color: #9F9FA0;
 }
 
@@ -100,12 +94,15 @@
   display: block;
   padding: 10px;
   margin: 0 auto;
+  padding-bottom: 100px; /* Espaço para o footer fixo */
 }
+
 #proximos-eventos-container h1 {
   font-size: 20px;
   margin-left: 25px;
   margin-bottom: 13px;
 }
+
 @media screen and (min-width: 400px) {
   #proximos-eventos-container {
     max-width: 400px;

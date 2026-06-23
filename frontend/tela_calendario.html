@@ -8,15 +8,64 @@
     <link rel="stylesheet" href="./css/style.ComponenteProximosEventos.css">
     <link rel="stylesheet" href="./css/style.header.css">
     <link rel="stylesheet" href="./css/style.footer.css">
+    <link rel="stylesheet" href="./css/styleComponenteCadastroAvisosEventos.css">
+    <link rel="stylesheet" href="./css/styleComponenteBotaoVoz.css">
     <title>Mães Mobilizadoras</title>
+    <style>
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
   </head>
-  <body style="background-color: #f5ede9">
+  <body style="background-color: #f5ede9" style="position: relative">
+    <!-- TELA DE LOADING -->
+    <div id="loading-screen" style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(245, 237, 233, 0.85);
+        backdrop-filter: blur(2px);
+        -webkit-backdrop-filter: blur(2px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        transition: opacity 0.5s ease;
+        pointer-events: none;
+    ">
+        <div style="text-align: center; pointer-events: none;">
+            <div style="
+                width: 40px;
+                height: 40px;
+                border: 3px solid #d0d0d0;
+                border-top-color: #00636A;
+                border-radius: 50%;
+                animation: spin 0.8s linear infinite;
+                margin: 0 auto 16px auto;
+            "></div>
+            <p style="
+                margin: 0;
+                color: #4a4a4a;
+                font-family: 'Inter', sans-serif;
+                font-weight: 300;
+                font-size: 16px;
+                letter-spacing: 0.5px;
+            ">Carregando...</p>
+        </div>
+    </div>
+
     <div data-spec="header" data-prop-titulo="Calendário"></div>
     <div data-spec="CalendarioAcoes" style="margin: 81px auto 0px auto"></div>
     <div id="proximos-eventos-container">
         <h1 style="margin-top: 15px" >Próximos eventos</h1>
         <div id="proximos-eventos"></div>
     </div>
+
+    <!-- Modal de detalhes/criação de eventos -->
+    <div id="modal-container" data-spec="componenteCadastroAvisosEventos"></div>
+
     <div id="footer" data-spec="footer"></div>
 
     <script src="js/api.js"></script>
@@ -25,6 +74,8 @@
     <script src="./js/script-header.js"></script>
     <script src="./js/script-footer.js"></script>
     <script src="./js/notifications.js"></script>
+    <script src="./js/scriptComponenteCadastroAvisosEventos.js"></script>
+    <script src="./js/scriptComponenteBotaoVoz.js"></script>
     <script src="./js/scriptCalendarioAcoes.js"></script>
   </body>
 </html>

@@ -15,6 +15,9 @@ async function carregarEventos(query) {
     hideLoading();
     await new Promise(resolve => setTimeout(resolve, 500));
     mostrar_msg_erro('Erro ao buscar eventos:', "" + err);
+  } finally {
+    // 🔹 OCULTA LOADING APÓS A REQUISIÇÃO (SUCESSO OU ERRO)
+    ocultarLoading();
   }
 }
 
@@ -24,10 +27,11 @@ async function renderizarEventos(eventos) {
 
   mount.innerHTML = '';
 
-  const mesFmt = new Intl.DateTimeFormat(undefined, {
+  // FORÇA LOCALE PT-BR para o mês e dia (curtos)
+  const mesFmt = new Intl.DateTimeFormat('pt-BR', {
     month: 'short',
   });
-  const diaFmt = new Intl.DateTimeFormat(undefined, {
+  const diaFmt = new Intl.DateTimeFormat('pt-BR', {
     day: 'numeric',
   });
 
@@ -78,12 +82,18 @@ async function configurarElementos() {
   barraPesquisa.addEventListener('input', handler);
 }
 
+// 🔹 FUNÇÃO PARA OCULTAR LOADING
+function ocultarLoading() {
+  const loadingScreen = document.getElementById('loading-screen');
+  if (loadingScreen) {
+    loadingScreen.style.opacity = '0';
+    setTimeout(() => {
+      loadingScreen.style.display = 'none';
+    }, 500);
+  }
+}
+
 // 4. INICIALIZAÇÃO DA PÁGINA
-// CORREÇÃO: as chamadas foram movidas para o evento 'componentsReady' disparado por
-// components.js após todos os componentes (header, footer) estarem no DOM.
-// Antes eram chamadas imediatamente, causando dois problemas:
-//   - barraPesquisa retornava null porque #input-pesquisa só existe após o header carregar.
-//   - carregarEventos disparava antes da página estar pronta para renderizar.
 document.addEventListener('componentsReady', () => {
   carregarEventos();
   configurarElementos();

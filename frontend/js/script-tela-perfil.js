@@ -1,81 +1,124 @@
-// ...existing code...
-function titleCase(s) {
-  return (s || '').toLowerCase()
-    .split(' ')
-    .map(word => word ? word.charAt(0).toUpperCase() + word.slice(1) : '')
-    .join(' ');
-}
-
-async function loadProfile() {
-  if (typeof showLoading === 'function') showLoading();
+async function carregarPerfil() {
   try {
-    const data = await apiGet('/api/me', undefined);
-    if (!data) return;
+    const data = await apiGet('/api/me');
+    document.getElementById('nome').textContent = data.full_name || 'Usuário';
+    document.getElementById('subtitulo').textContent = data.role || 'Participante';
+    document.getElementById('numero_eventos_criou').textContent = data.created_events_count || 0;
+    document.getElementById('numero_eventos_participou').textContent = data.participated_events_count || 0;
 
-    const nomeEl = document.getElementById("nome");
-    const subtEl = document.getElementById("subtitulo");
-    const nCriouEl = document.getElementById("numero_eventos_criou");
-    const nPartEl = document.getElementById("numero_eventos_participou");
-
-    if (nomeEl) nomeEl.innerText = data.full_name || '';
-    if (subtEl) subtEl.innerText = titleCase(data.role || '');
-    if (nCriouEl) nCriouEl.innerText = String(data.created_events_count ?? '');
-    if (nPartEl) nPartEl.innerText = String(data.participated_events_count ?? '');
-
-    const botaoAviso = document.getElementById("botao_azul");
-    const botaoMobilizadora = document.getElementById("botao_vermelho");
-
-    switch (data.role) {
-      case "coordenadora":
-        break;
-      case "organizadora":
-        if (botaoMobilizadora) botaoMobilizadora.style.display = "none";
-        break;
-      case "participante":
-        if (botaoAviso) botaoAviso.style.display = "none";
-        if (botaoMobilizadora) botaoMobilizadora.style.display = "none";
-        document.querySelectorAll('.participante-hide').forEach(e => { e.style.display = 'none'; });
-        break;
+    const isParticipante = data.role === 'participante';
+    const elementosHide = document.querySelectorAll('.participante-hide');
+    for (let el of elementosHide) {
+      el.style.display = isParticipante ? 'none' : 'block';
     }
   } catch (err) {
     console.error('Erro ao carregar perfil:', err);
+    mostrar_msg_erro('Erro ao carregar perfil', '' + err);
   } finally {
-    if (typeof hideLoading === 'function') hideLoading();
+    ocultarLoading();
   }
 }
 
-function configurarElementosPerfil() {
-  const sair = document.getElementById('texto_sair');
-  if (sair) {
-    sair.addEventListener('click', (evt) => {
-      evt.preventDefault();
-      localStorage.clear();
-      window.location.reload();
+function ocultarLoading() {
+  const loadingScreen = document.getElementById('loading-screen');
+  if (loadingScreen) {
+    loadingScreen.style.opacity = '0';
+    setTimeout(() => {
+      loadingScreen.style.display = 'none';
+    }, 500);
+  }
+}
+
+function logout() {
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('refresh_token');
+  window.location.href = 'tela-cadastro.html';
+}
+
+function abrirModalLogout() {
+  const modal = document.getElementById('confirmacao-logout');
+  if (modal) modal.style.display = 'flex';
+}
+
+function fecharModalLogout() {
+  const modal = document.getElementById('confirmacao-logout');
+  if (modal) modal.style.display = 'none';
+}
+
+function configurarBotoes() {
+  // Botão "Enviar Avisos"
+  const botaoAvisos = document.getElementById('botao_azul');
+  if (botaoAvisos) {
+    botaoAvisos.addEventListener('click', function() {
+      if (window.ccaeAbrirModal) {
+        window.ccaeAbrirModal('criar-aviso', null);
+      } else {
+        setTimeout(() => {
+          if (window.ccaeAbrirModal) {
+            window.ccaeAbrirModal('criar-aviso', null);
+          } else {
+            mostrar_msg_erro('Erro', 'Modal não disponível. Tente recarregar a página.');
+          }
+        }, 500);
+      }
     });
   }
 
-  const botaoAzul = document.getElementById('botao_azul');
-  if (botaoAzul) botaoAzul.addEventListener('click', () => ccaeAbrirModal('criar-aviso'));
+  // Botão "Adicionar Mobilizadora"
+  const botaoMobilizadora = document.getElementById('botao_vermelho');
+  if (botaoMobilizadora) {
+    botaoMobilizadora.addEventListener('click', function() {
+      if (window.ccaeAbrirModal) {
+        window.ccaeAbrirModal('adicionar-mobilizadora', null);
+      } else {
+        setTimeout(() => {
+          if (window.ccaeAbrirModal) {
+            window.ccaeAbrirModal('adicionar-mobilizadora', null);
+          } else {
+            mostrar_msg_erro('Erro', 'Modal não disponível. Tente recarregar a página.');
+          }
+        }, 500);
+      }
+    });
+  }
 
-  const botaoVermelho = document.getElementById('botao_vermelho');
-  if (botaoVermelho) botaoVermelho.addEventListener('click', () => ccaeAbrirModal('adicionar-mobilizadora'));
+  // 🔹 Botão "Sair" – evento no container inteiro (.icone_descricao)
+  const containerSair = document.querySelector('.menu .icone_descricao:last-child');
+  if (containerSair) {
+    containerSair.addEventListener('click', function(e) {
+      // Impede que o link dentro do container dispare navegação
+      e.preventDefault();
+      abrirModalLogout();
+    });
+  }
+
+  // Modal de logout – botão Cancelar
+  const cancelarBtn = document.getElementById('cancelar-logout');
+  if (cancelarBtn) {
+    cancelarBtn.addEventListener('click', fecharModalLogout);
+  }
+
+  // Modal de logout – botão Sair
+  const confirmarBtn = document.getElementById('confirmar-logout');
+  if (confirmarBtn) {
+    confirmarBtn.addEventListener('click', function() {
+      fecharModalLogout();
+      logout();
+    });
+  }
+
+  // Fechar modal ao clicar fora da caixa
+  const modal = document.getElementById('confirmacao-logout');
+  if (modal) {
+    modal.addEventListener('click', function(e) {
+      if (e.target === this) {
+        fecharModalLogout();
+      }
+    });
+  }
 }
 
-// Inicialização: esperar componentsReady (como em script-tela-acoes) para garantir header/footer/componentes no DOM
 document.addEventListener('componentsReady', () => {
-  configurarElementosPerfil();
-  loadProfile();
+  carregarPerfil();
+  configurarBotoes();
 });
-
-// Fallback: se componentsReady nunca for disparado, garantir inicialização após DOMContentLoaded
-document.addEventListener('DOMContentLoaded', () => {
-  // se componentsReady já ocorreu, handlers já estarão registrados; caso contrário, registra e chama
-  if (!window.__componentsReadyFired) {
-    // pequena espera para possíveis injeções de componentes síncronas
-    setTimeout(() => {
-      configurarElementosPerfil();
-      loadProfile();
-    }, 50);
-  }
-});
-// ...existing code...

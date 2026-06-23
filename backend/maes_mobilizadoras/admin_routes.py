@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 
 from flask import Blueprint, g, jsonify, request, current_app
 from pydantic import ValidationError
+from sqlalchemy import or_
 
 from maes_mobilizadoras.auth import require_role
 from maes_mobilizadoras.models import RoleChange, User, db
@@ -25,21 +26,38 @@ def _pydantic_errors_to_dict(exc: ValidationError) -> dict:
 @admin_bp.get("/users")
 @require_role("coordenadora")
 def list_users():
-    """Lista todas as usuárias ativas com paginação.
+    """Lista todas as usuárias ativas com paginação e busca.
 
     Query params:
       page       int  (default 1)
       page_size  int  (default 20, max 100)
       role       str  filtra por role exata
+      phone      str  busca por telefone exato (se fornecido)
+      search     str  busca parcial em phone, full_name ou email
     """
     page = max(request.args.get("page", 1, type=int), 1)
     page_size = min(max(request.args.get("page_size", 20, type=int), 1), 100)
     role_filter = request.args.get("role")
+    phone_exact = request.args.get("phone")
+    search_term = request.args.get("search")
 
     query = db.session.query(User).filter(User.is_active.is_(True))
 
     if role_filter:
         query = query.filter(User.role == role_filter)
+
+    if phone_exact:
+        query = query.filter(User.phone == phone_exact)
+
+    if search_term:
+        search_pattern = f"%{search_term}%"
+        query = query.filter(
+            or_(
+                User.phone.ilike(search_pattern),
+                User.full_name.ilike(search_pattern),
+                User.email.ilike(search_pattern),
+            )
+        )
 
     total = query.count()
     users = query.offset((page - 1) * page_size).limit(page_size).all()
@@ -70,10 +88,8 @@ def update_user_role(user_id: str):
     Regras:
     - Apenas coordenadoras podem acessar este endpoint.
     - Coordenadora não pode alterar a própria role.
-    - A nova role deve ser um valor válido: usuaria | organizadora | coordenadora.
-    - Alteração e registro de auditoria ocorrem na mesma transação.
+    - A nova role deve ser um valor válido: participante | organizadora | coordenadora.
     """
-    # Auto-alteração bloqueada
     if user_id == g.current_user_id:
         return jsonify({"error": "Coordenadora não pode alterar a própria role"}), 400
 

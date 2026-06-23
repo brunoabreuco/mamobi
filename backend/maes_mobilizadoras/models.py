@@ -25,8 +25,6 @@ def generate_uuid():
 class User(db.Model):
     __tablename__ = "users"
     __table_args__ = (
-        # Garante que todo usuário tenha ao menos uma identidade.
-        # Usuários OTP têm phone; usuários Google têm email.
         CheckConstraint(
             "phone IS NOT NULL OR email IS NOT NULL",
             name="users_has_identity",
@@ -34,8 +32,8 @@ class User(db.Model):
     )
 
     id = Column(String(36), primary_key=True, default=generate_uuid)
-    phone = Column(String(20), unique=True, nullable=True)   # nullable: Google users não têm telefone
-    email = Column(String(254), unique=True, nullable=True)  # nullable: OTP users podem não ter e-mail
+    phone = Column(String(20), unique=True, nullable=True)
+    email = Column(String(254), unique=True, nullable=True)
     pending_phone = Column(String(20), nullable=True)
     full_name = Column(String(150), nullable=False)
     neighborhood = Column(String(100), nullable=True)
@@ -113,15 +111,28 @@ class Event(db.Model):
         onupdate=lambda: datetime.now(timezone.utc),
     )
 
-    # Relationships
-    participations = db.relationship("EventParticipation", backref="event", lazy=True)
-    notifications = db.relationship("Notification", backref="event", lazy=True)
+    # Correção: cascade para deletar participações e notificações em cascata
+    participations = db.relationship(
+        "EventParticipation",
+        backref="event",
+        lazy=True,
+        cascade="all, delete-orphan",
+        passive_deletes=True
+    )
+    notifications = db.relationship(
+        "Notification",
+        backref="event",
+        lazy=True,
+        cascade="all, delete-orphan",
+        passive_deletes=True
+    )
 
 
 class EventParticipation(db.Model):
     __tablename__ = "event_participations"
     id = Column(String(36), primary_key=True, default=generate_uuid)
-    event_id = Column(String(36), ForeignKey("events.id"), nullable=False)
+    # Correção: adicionar ondelete="CASCADE" na FK
+    event_id = Column(String(36), ForeignKey("events.id", ondelete="CASCADE"), nullable=False)
     user_id = Column(String(36), ForeignKey("users.id"), nullable=False)
     status = Column(String(20), nullable=False)
     registered_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
@@ -144,7 +155,8 @@ class SyncQueue(db.Model):
 class Notification(db.Model):
     __tablename__ = "notifications"
     id = Column(String(36), primary_key=True, default=generate_uuid)
-    event_id = Column(String(36), ForeignKey("events.id"), nullable=True)
+    # Correção: adicionar ondelete="CASCADE" na FK
+    event_id = Column(String(36), ForeignKey("events.id", ondelete="CASCADE"), nullable=True)
     sender_id = Column(String(36), ForeignKey("users.id"), nullable=True)
     type = Column(String(30), nullable=False)
     title = Column(String(150), nullable=False)
@@ -177,7 +189,6 @@ class FCMToken(db.Model):
 
 
 class RoleChange(db.Model):
-    """Auditoria imutável de alterações de role."""
     __tablename__ = "role_changes"
     id = Column(String(36), primary_key=True, default=generate_uuid)
     user_id = Column(String(36), ForeignKey("users.id"), nullable=False)

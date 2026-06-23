@@ -53,8 +53,6 @@ function setProps(element, props) {
       }
     }
   }
-
-  // CONTROLE DE VISIBILIDADE POR TELA
 }
 
 /**
@@ -70,8 +68,6 @@ async function make(spec, props) {
   element.classList.add('c-' + spec);
   setProps(element, props);
 
-  // CORREÇÃO: guards adicionados para evitar ReferenceError caso os scripts
-  // de configuração ainda não tenham sido parseados pelo browser.
   if (spec === 'header' && typeof configurarHeader === 'function') {
     configurarHeader(element);
   }
@@ -86,30 +82,23 @@ async function make(spec, props) {
 /**
  * Percorre o DOM em busca de elementos com o atributo 'data-spec' e os inicializa automaticamente.
  * Também extrai atributos 'data-prop-*' do elemento container para passar como props.
- * CORREÇÃO: a função agora é async e aguarda todos os componentes com Promise.all antes de
- * disparar o evento 'componentsReady', que sinaliza ao resto da página que o DOM está completo.
  */
 async function loadAllComponents() {
-  // CORREÇÃO: seletor restrito a [data-spec] em vez de querySelectorAll('*')
-  // para evitar iterar sobre todos os elementos do DOM desnecessariamente.
   const elements = document.querySelectorAll('[data-spec]');
   const promises = [];
 
   for (let element of elements) {
     const spec = element.getAttribute('data-spec');
     let props = {};
-    // Extrai propriedades definidas como data-prop-nome="valor"
     for (let attr of element.attributes) {
       if (attr.name.startsWith('data-prop-')) {
         props[attr.name.replace('data-prop-', '')] = attr.value;
       }
     }
-    // Renderiza o componente e substitui o conteúdo do elemento
     const p = make(spec, props).then(el => {
       element.innerHTML = '';
       element.appendChild(el);
 
-      // CORREÇÃO: guard adicionado pelo mesmo motivo dos guards em make().
       if (spec === 'footer' && typeof configurarFooter === 'function') {
         configurarFooter();
       }
@@ -118,13 +107,8 @@ async function loadAllComponents() {
     promises.push(p);
   }
 
-  // CORREÇÃO: aguarda todos os componentes estarem no DOM antes de disparar o evento.
   await Promise.all(promises);
   document.dispatchEvent(new Event('componentsReady'));
 }
 
-// CORREÇÃO: execução movida para DOMContentLoaded para garantir que todos os
-// scripts da página (script-header.js, script-footer.js, etc.) já foram
-// parseados antes de loadAllComponents() tentar chamá-los.
-// Antes era chamado imediatamente, causando ReferenceError nas funções de configuração.
 document.addEventListener('DOMContentLoaded', loadAllComponents);

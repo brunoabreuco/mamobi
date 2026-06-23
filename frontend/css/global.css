@@ -26,3 +26,9 @@
     --hr-color: #CFCFCF;
 
 }
+
+body {
+    padding-bottom: 80px; /* altura do footer + folga */
+    min-height: 100vh;
+    margin: 0;
+}

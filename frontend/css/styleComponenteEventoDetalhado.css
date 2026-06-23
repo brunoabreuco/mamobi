@@ -4,18 +4,25 @@
     box-sizing: border-box;
     font-family: "Inter", sans-serif;
 }
+
 .c-componenteEventoDetalhado .conteudo {
     display: flex;
     flex-direction: row;
     padding: 7px 22px 7px 22px;
     gap: 8px;
+    transition: background-color 0.2s ease;
+    border-radius: 8px; /* para arredondar o hover */
+    cursor: pointer;
 }
+.c-componenteEventoDetalhado .conteudo:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
 .c-componenteEventoDetalhado .data {
     background-color: #CCE0E2;
     width: 35px;
     height: 35px;
     border-radius: 11px;
-
     font-size: 16px;
     font-weight: 500;
     color:#00636A;
