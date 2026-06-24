@@ -21,6 +21,11 @@ async function carregarPerfil() {
       botaoMobilizadora.style.display = isCoordenadora ? 'flex' : 'none';
     }
 
+    const botaoAvisos = document.getElementById('botao_azul');
+    if(botaoAvisos) {
+      botaoAvisos.style.display = isParticipante ? 'none' : 'flex';
+    }
+
     // (Opcional) Botão "Enviar Avisos" pode ficar visível para organizadoras e coordenadoras
     // Mas se quiser esconder para participantes, já está tratado pela classe .participante-hide
     // Se quiser que apenas coordenadoras possam enviar avisos, pode adicionar lógica similar.

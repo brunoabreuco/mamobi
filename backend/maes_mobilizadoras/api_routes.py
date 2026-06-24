@@ -435,6 +435,9 @@ def update_me():
             user.pending_phone = payload.phone
             phone_change_pending = True
 
+    if payload.email is not None and payload.email != user.email:
+        user.email = payload.email
+
     if payload.neighborhood is not None:
         user.neighborhood = payload.neighborhood
 

@@ -215,7 +215,7 @@ async function inicializarSupabase() {
         tokenStorage.salvar(data);
 
         const perfil = await apiGet('/api/me');
-        if (perfil.full_name && perfil.full_name.trim() !== '' && perfil.email) {
+        if (perfil.full_name && perfil.full_name.trim() !== '') {
           window.location.href = REDIRECT_APOS_LOGIN;
           return;
         }
