@@ -2,7 +2,7 @@ from datetime import datetime
 
 from sqlalchemy import or_
 
-from maes_mobilizadoras.models import Event, db
+from mamobi.models import Event, db
 
 
 def build_event_filters(

@@ -1,7 +1,7 @@
 import pytest
 from flask import Flask
 from datetime import datetime, timezone
-from maes_mobilizadoras.models import db, User, EventCategory, Event, EventParticipation
+from mamobi.models import db, User, EventCategory, Event, EventParticipation
 
 
 @pytest.fixture

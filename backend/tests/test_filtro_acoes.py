@@ -19,7 +19,7 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from maes_mobilizadoras.models import Event, EventCategory, User, db
+from mamobi.models import Event, EventCategory, User, db
 
 
 # ---------------------------------------------------------------------------

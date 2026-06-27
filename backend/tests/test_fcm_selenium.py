@@ -14,9 +14,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from maes_mobilizadoras.app_factory import create_app
-from maes_mobilizadoras.models import db, AuthOTP, User, FCMToken
-from maes_mobilizadoras.notifications import send_to_user
+from mamobi.app_factory import create_app
+from mamobi.models import db, AuthOTP, User, FCMToken
+from mamobi.notifications import send_to_user
 
 def get_free_port():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -83,7 +83,7 @@ def driver():
     yield driver
     driver.quit()
 
-@patch("maes_mobilizadoras.auth.TwilioClient")
+@patch("mamobi.auth.TwilioClient")
 def test_fcm_integration(mock_twilio_class, server, driver):
     # Mock Twilio instance
     mock_twilio_instance = mock_twilio_class.return_value

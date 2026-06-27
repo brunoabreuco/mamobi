@@ -7,8 +7,8 @@ from unittest.mock import MagicMock, patch
 import jwt as pyjwt
 import pytest
 
-from maes_mobilizadoras.auth import _OTP_TTL, issue_tokens
-from maes_mobilizadoras.models import AuthOTP, User, db
+from mamobi.auth import _OTP_TTL, issue_tokens
+from mamobi.models import AuthOTP, User, db
 
 from conftest import make_otp
 
@@ -149,7 +149,7 @@ class TestTokenRefresh:
         assert "refresh_token" in body
         assert body["token_type"] == "Bearer"
         # Decodifica o novo access token para confirmar que é válido
-        from maes_mobilizadoras.auth import decode_token
+        from mamobi.auth import decode_token
         payload = decode_token(body["access_token"], expected_type="access")
         assert payload["sub"] == str(participante.id)
 
@@ -213,7 +213,7 @@ class TestProfileCreation:
 # ---------------------------------------------------------------------------
 
 class TestOtpRequest:
-    @patch("maes_mobilizadoras.auth._get_twilio")
+    @patch("mamobi.auth._get_twilio")
     def test_otp_request_chama_twilio(self, mock_twilio_factory, client):
         mock_twilio = MagicMock()
         mock_twilio_factory.return_value = mock_twilio
@@ -223,7 +223,7 @@ class TestOtpRequest:
         assert resp.status_code == 200
         mock_twilio.messages.create.assert_called_once()
 
-    @patch("maes_mobilizadoras.auth._get_twilio")
+    @patch("mamobi.auth._get_twilio")
     def test_rate_limit_bloqueia_segundo_request_imediato(self, mock_twilio_factory, client):
         mock_twilio_factory.return_value = MagicMock()
         phone = "+5511911110002"

@@ -4,7 +4,7 @@ from typing import Dict, List, Optional
 import firebase_admin
 from dotenv import load_dotenv
 from firebase_admin import messaging
-from maes_mobilizadoras.models import db, FCMToken
+from mamobi.models import db, FCMToken
 
 load_dotenv()
 logger = logging.getLogger(__name__)

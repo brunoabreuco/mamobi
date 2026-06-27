@@ -1,11 +1,11 @@
 import pytest
-from maes_mobilizadoras.models import EventCategory, db
-from maes_mobilizadoras.seed import DEFAULT_CATEGORIES
+from mamobi.models import EventCategory, db
+from mamobi.seed import DEFAULT_CATEGORIES
 
 def test_list_categories(client, app):
     # Categories might not be seeded due to test DB timing
     with app.app_context():
-        from maes_mobilizadoras.seed import seed_categories
+        from mamobi.seed import seed_categories
         seed_categories()
         
     response = client.get("/api/categories")

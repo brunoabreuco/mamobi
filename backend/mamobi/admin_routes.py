@@ -4,9 +4,9 @@ from flask import Blueprint, g, jsonify, request, current_app
 from pydantic import ValidationError
 from sqlalchemy import or_
 
-from maes_mobilizadoras.auth import require_role
-from maes_mobilizadoras.models import RoleChange, User, db
-from maes_mobilizadoras.schemas import RoleUpdateRequest, UserAdminResponse
+from mamobi.auth import require_role
+from mamobi.models import RoleChange, User, db
+from mamobi.schemas import RoleUpdateRequest, UserAdminResponse
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 

@@ -20,7 +20,7 @@ dependencies = [
 ]
 
 [tool.setuptools.packages.find]
-include = ["maes_mobilizadoras*"]
+include = ["mamobi*"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]

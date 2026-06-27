@@ -1,7 +1,7 @@
 import pytest
 from datetime import datetime, timezone, timedelta
-from maes_mobilizadoras.models import User, EventCategory, Event, EventParticipation, db
-from maes_mobilizadoras.auth import issue_tokens
+from mamobi.models import User, EventCategory, Event, EventParticipation, db
+from mamobi.auth import issue_tokens
 
 def _create_user(app, **kwargs) -> User:
     defaults = {

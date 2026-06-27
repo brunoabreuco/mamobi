@@ -6,8 +6,8 @@ import os
 from datetime import datetime
 from sqlalchemy.orm import joinedload
 
-from maes_mobilizadoras.limiter import limiter
-from maes_mobilizadoras.models import (
+from mamobi.limiter import limiter
+from mamobi.models import (
     Event,
     User,
     db,
@@ -17,7 +17,7 @@ from maes_mobilizadoras.models import (
     NotificationRead,
     EventCategory,
 )
-from maes_mobilizadoras.schemas import (
+from mamobi.schemas import (
     AcaoData,
     AcaoMetadata,
     AcaoPatchRequest,
@@ -36,7 +36,7 @@ from maes_mobilizadoras.schemas import (
     CategoryListResponse,
     CategoryListItem,
 )
-from maes_mobilizadoras.auth import (
+from mamobi.auth import (
     decode_token,
     get_or_create_profile,
     issue_tokens,
@@ -46,8 +46,8 @@ from maes_mobilizadoras.auth import (
     verify_otp,
     verify_supabase_token,
 )
-from maes_mobilizadoras.notifications import send_to_user, FIREBASE_CONF
-from maes_mobilizadoras.acoes_filter import build_event_filters
+from mamobi.notifications import send_to_user, FIREBASE_CONF
+from mamobi.acoes_filter import build_event_filters
 
 api = Blueprint("api", __name__, url_prefix="/api")
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
@@ -832,7 +832,7 @@ def list_acoes():
     auth_header = request.headers.get("Authorization")
     if auth_header and auth_header.startswith("Bearer "):
         try:
-            from maes_mobilizadoras.auth import decode_token
+            from mamobi.auth import decode_token
             token = auth_header.split(" ", 1)[1]
             payload = decode_token(token)
             user_id = payload.get("sub")

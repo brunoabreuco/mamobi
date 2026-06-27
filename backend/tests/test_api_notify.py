@@ -1,8 +1,8 @@
 import pytest
 from unittest.mock import patch
 from datetime import datetime, timezone, timedelta
-from maes_mobilizadoras.models import User, EventCategory, Event, EventParticipation, Notification, FCMToken, db
-from maes_mobilizadoras.auth import issue_tokens
+from mamobi.models import User, EventCategory, Event, EventParticipation, Notification, FCMToken, db
+from mamobi.auth import issue_tokens
 
 def _create_user(app, **kwargs) -> User:
     defaults = {
@@ -28,7 +28,7 @@ def _auth_header(app, user: User) -> dict:
 @pytest.fixture
 def mock_messaging():
     from firebase_admin import messaging
-    with patch('maes_mobilizadoras.notifications.messaging') as mock:
+    with patch('mamobi.notifications.messaging') as mock:
         mock.UnregisteredError = messaging.UnregisteredError
         yield mock
 
@@ -324,7 +324,7 @@ def test_notify_db_failure(client, app, mock_messaging):
 
     headers = _auth_header(app, organizer)
     
-    with patch("maes_mobilizadoras.models.db.session.commit", side_effect=Exception("Database error")):
+    with patch("mamobi.models.db.session.commit", side_effect=Exception("Database error")):
         response = client.post(
             f"/api/acoes/{event_id}/notify",
             json={"title": "Erro", "message": "Falha de DB"},

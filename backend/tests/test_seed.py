@@ -1,11 +1,11 @@
 import os
 from pathlib import Path
-from maes_mobilizadoras.models import EventCategory, db
-from maes_mobilizadoras.seed import DEFAULT_CATEGORIES, IMAGES_DIR
+from mamobi.models import EventCategory, db
+from mamobi.seed import DEFAULT_CATEGORIES, IMAGES_DIR
 
 def test_seed_categories(app):
     with app.app_context():
-        from maes_mobilizadoras.seed import seed_categories
+        from mamobi.seed import seed_categories
         seed_categories()
         
         # Check if all default categories were created
@@ -30,7 +30,7 @@ def test_seed_categories(app):
 
 def test_seed_idempotency(app):
     with app.app_context():
-        from maes_mobilizadoras.seed import seed_categories
+        from mamobi.seed import seed_categories
         
         # Ensure initial seed
         seed_categories()

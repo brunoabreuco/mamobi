@@ -8,9 +8,9 @@ from dotenv import load_dotenv
 from flask import Flask, Response
 from supabase import create_client
 
-from maes_mobilizadoras.models import db
-from maes_mobilizadoras.limiter import limiter
-from maes_mobilizadoras.notifications import FIREBASE_CONF
+from mamobi.models import db
+from mamobi.limiter import limiter
+from mamobi.notifications import FIREBASE_CONF
 
 BASE_DIR = Path(__file__).parent.parent
 
@@ -54,7 +54,7 @@ def create_app(test_config: dict | None = None):
     with app.app_context():
         if app.config.get("TESTING") or os.environ.get("AUTO_MIGRATE"):
             db.create_all()
-            from maes_mobilizadoras.seed import seed_all
+            from mamobi.seed import seed_all
 
             seed_all()
 
@@ -89,8 +89,8 @@ def create_app(test_config: dict | None = None):
         content = content.replace("SERVER_SIDE_CONFIG", json.dumps(FIREBASE_CONF))
         return Response(content, mimetype="text/javascript")
 
-    from maes_mobilizadoras.api_routes import api, auth_bp
-    from maes_mobilizadoras.admin_routes import admin_bp
+    from mamobi.api_routes import api, auth_bp
+    from mamobi.admin_routes import admin_bp
 
     app.register_blueprint(api)  # /api/*
     app.register_blueprint(auth_bp)  # /auth/*

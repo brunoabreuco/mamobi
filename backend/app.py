@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 from flask import send_from_directory
-from maes_mobilizadoras.app_factory import create_app
+from mamobi.app_factory import create_app
 
 app = create_app()
 

@@ -8,8 +8,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 from flask import Blueprint, jsonify
 
-from maes_mobilizadoras.app_factory import create_app
-from maes_mobilizadoras.models import AuthOTP, User, db
+from mamobi.app_factory import create_app
+from mamobi.models import AuthOTP, User, db
 
 _TEST_ENV = {
     "SUPABASE_URL": "https://fake.supabase.co",
@@ -30,7 +30,7 @@ _TEST_APP_CONFIG = {
 
 
 def _register_test_routes(app) -> None:
-    from maes_mobilizadoras.auth import require_auth, require_role
+    from mamobi.auth import require_auth, require_role
 
     bp = Blueprint("test_helpers", __name__)
 
@@ -50,7 +50,7 @@ def _register_test_routes(app) -> None:
 @pytest.fixture(scope="function")
 def app():
     with patch.dict(os.environ, _TEST_ENV):
-        with patch("maes_mobilizadoras.app_factory.create_client") as mock_supabase:
+        with patch("mamobi.app_factory.create_client") as mock_supabase:
             mock_supabase.return_value = MagicMock()
             application = create_app(test_config=_TEST_APP_CONFIG)
 
@@ -103,7 +103,7 @@ def organizadora(app):
 
 
 def make_otp(app, phone: str, code: str, expired: bool = False) -> AuthOTP:
-    from maes_mobilizadoras.auth import _OTP_TTL
+    from mamobi.auth import _OTP_TTL
 
     delta = -timedelta(minutes=1) if expired else _OTP_TTL
     with app.app_context():

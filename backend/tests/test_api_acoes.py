@@ -3,9 +3,9 @@ import pytest
 from datetime import datetime, timezone, timedelta
 from unittest.mock import MagicMock, patch
 
-from maes_mobilizadoras.app_factory import create_app
-from maes_mobilizadoras.auth import issue_tokens
-from maes_mobilizadoras.models import db, User, EventCategory, Event
+from mamobi.app_factory import create_app
+from mamobi.auth import issue_tokens
+from mamobi.models import db, User, EventCategory, Event
 
 from conftest import _TEST_ENV
 
@@ -20,7 +20,7 @@ def app():
         "RATELIMIT_ENABLED": True,
     }
     with patch.dict(os.environ, _TEST_ENV):
-        with patch("maes_mobilizadoras.app_factory.create_client") as mock_supabase:
+        with patch("mamobi.app_factory.create_client") as mock_supabase:
             mock_supabase.return_value = MagicMock()
             application = create_app(test_config=test_config)
 

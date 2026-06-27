@@ -1,8 +1,8 @@
 import pytest
 from unittest.mock import patch, MagicMock
-from maes_mobilizadoras.models import User, FCMToken, db
-from maes_mobilizadoras.notifications import send_push_notification, send_to_user
-from maes_mobilizadoras.auth import issue_tokens
+from mamobi.models import User, FCMToken, db
+from mamobi.notifications import send_push_notification, send_to_user
+from mamobi.auth import issue_tokens
 
 def _create_user(app, **kwargs) -> str:
     defaults = {
@@ -28,7 +28,7 @@ def _auth_header(app, user_id: str) -> dict:
 @pytest.fixture
 def mock_messaging():
     from firebase_admin import messaging
-    with patch('maes_mobilizadoras.notifications.messaging') as mock:
+    with patch('mamobi.notifications.messaging') as mock:
         # Ensure the mock's UnregisteredError refers to the real class
         # so that 'except messaging.UnregisteredError' works in the app code
         mock.UnregisteredError = messaging.UnregisteredError

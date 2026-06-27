@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 from datetime import datetime, timedelta, timezone
-from maes_mobilizadoras.models import db, EventCategory, User, Event, EventParticipation, Notification
+from mamobi.models import db, EventCategory, User, Event, EventParticipation, Notification
 
 # Root of the project (one level up from backend/)
 BASE_DIR = Path(__file__).parent.parent.parent

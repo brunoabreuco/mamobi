@@ -10,8 +10,8 @@ import uuid
 
 import pytest
 
-from maes_mobilizadoras.auth import issue_tokens
-from maes_mobilizadoras.models import RoleChange, User, db
+from mamobi.auth import issue_tokens
+from mamobi.models import RoleChange, User, db
 
 
 # ---------------------------------------------------------------------------

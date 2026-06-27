@@ -5,9 +5,9 @@ import pytest
 from flask import Flask
 
 from datetime import datetime, timezone, timedelta
-from maes_mobilizadoras.models import User, db, Event, EventParticipation, EventCategory
-from maes_mobilizadoras.api_routes import api
-from maes_mobilizadoras.auth import issue_tokens
+from mamobi.models import User, db, Event, EventParticipation, EventCategory
+from mamobi.api_routes import api
+from mamobi.auth import issue_tokens
 
 
 # ------------------------------------------------------------------ fixtures
